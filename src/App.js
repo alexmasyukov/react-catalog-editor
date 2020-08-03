@@ -7,7 +7,6 @@ const data = {
     {
       id: 3,
       title: 'Название',
-      type: PROP_TYPES.STRING
     },
     {
       id: 4,
@@ -17,17 +16,23 @@ const data = {
     {
       id: 1,
       title: 'Хит продаж',
-      type: PROP_TYPES.CHECK
+      type: PROP_TYPES.CHECK,
+      style: {
+        textAlign: 'center'
+      }
     },
     {
       id: 2,
       title: 'Новинка',
-      type: PROP_TYPES.CHECK
+      type: PROP_TYPES.CHECK,
+      style: {
+        textAlign: 'center'
+      }
     },
     {
       id: 5,
       title: 'ID',
-      type: PROP_TYPES.ID
+      type: PROP_TYPES.LABEL
     }
   ],
   categories: [
@@ -41,9 +46,9 @@ const data = {
         move: true
       },
       properties: [ //order НЕ ПРАВИЛЬНО РАБОТАЕТ
-        { id: 5, order: 1 },
-        { id: 3, order: 2 }, //Название
-        { id: 4, order: 3 }, //Цена
+        { id: 5 },
+        { id: 3 }, //Название
+        { id: 4 }, //Цена
         {
           id: 1, //Хит продаж
           is: {
@@ -59,17 +64,17 @@ const data = {
     {
       id: 1,
       cid: 1,
-      values: ['Шар «Котёнок-единорожка»', 1650, true, false]
+      values: [1, 'Шар «Котёнок-единорожка»', 1650, true, false]
     },
     {
       id: 2,
       cid: 1,
-      values: ['Шар С Днем Рождения, хром', 100, false, false]
+      values: [2, 'Шар С Днем Рождения, хром', 100, false, false]
     },
     {
       id: 3,
       cid: 1,
-      values: ['Связка Человек Паук', 1200, true, true]
+      values: [3, 'Связка Человек Паук', 1200, true, true]
     }
   ]
 }

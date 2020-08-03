@@ -1,87 +1,120 @@
 import React from 'react'
+import cn from 'classnames'
 import styles from './editor.module.sass'
 import { compose } from "redux"
 import { PROP_TYPES } from "constants/common"
 
-const sortByOrder = (a, b) => {
-  if (!('order' in a) || !('order' in b)) return 0
-  return a.order > b.order ? 1 : -1
-}
+// const sortByOrder = (a, b) => {
+//   if (!('order' in a) || !('order' in b)) return 0
+//   return a.order > b.order ? 1 : -1
+// }
+//
+// const sortByDefineOrder = (a) => 'order' in a ? -1 : 1
 
-const sortByDefineOrder = (a) => 'order' in a ? -1 : 1
+// ...getPropertyById(id, fromProperties),
+// ...other
+// const getPropertyById = (id, props) => {
+//   const result = props.filter(prop => prop.id === id)
+//   return result.length ? result[0] : {}
+// }
 
 
-const getPropertyById = (id, props) => {
-  const result = props.filter(prop => prop.id === id)
-  return result.length ? result[0] : {}
-}
+// const getPropertiesByIds = (ids, fromProperties) =>
+//    ids.reduce((res, { id, ...other }) => {
+//      const propName = getPropKeyName(id)
+//      return {
+//        ...res,
+//        [propName]: {
+//          ...fromProperties[propName],
+//          ...other
+//        }
+//      }
+//    }, {})
+//
 
-const getPropertiesByIds = (ids, fromProperties) =>
-   ids.map(({ id, ...other }) => ({
-     ...getPropertyById(id, fromProperties),
-     ...other
-   }))
 
-const Control = ({ type = PROP_TYPES.STRING }) => {
-  switch (type) {
-    case PROP_TYPES.ID:
-      return 'sdfsf'
+const getPropKeyName = (id) => `p${id}`
+
+
+const Control = ({ propId, value, property }) => {
+  switch (property.type) {
+    case PROP_TYPES.CHECK:
+      return <input
+         name="isGoing"
+         type="checkbox"
+         checked={value}
+         onChange={() => {
+         }}/>
 
     default:
-      return 'def'
+      return value
   }
 }
 
-const Product = ({ id, cid, values }) => {
-  console.log(id, cid, values)
+const Product = ({ id, cid, values, properties }) => {
   return (
      <tr>
-       {Object.entries(values).map(([key, value]) => (
-          <td key={key}>
-            {value}
-            {/*<Control type={key} value={value} />*/}
-          </td>
-       ))}
+       {Object.entries(values).map(([propId, value]) => {
+         const property = properties[propId]
+         const { style } = property
+
+         return (
+            <td
+               key={propId}
+               style={style}
+            >
+              <Control propId={propId} value={value} property={property}/>
+            </td>
+         )
+       })
+       }
      </tr>
   )
 }
 
 
-const Category = ({ title = '', is = {} }) => {
+const Category = ({ title = '' }) => {
   return (
-     <>
-       <div className={styles.title}>{title}</div>
-     </>
+     <div className={styles.title}>{title}</div>
   )
 }
 
 
-const prepareCategories = (allProperties) => (categories) =>
-   categories.map(category => {
-     const properties = getPropertiesByIds(category.properties, allProperties)
-        .sort(sortByDefineOrder)
-        .sort(sortByOrder)
+const setValuesKeysByCategoriesProperties = (categories) => (products) =>
+   products.map(product => {
+     const categoryId = getPropKeyName(product.cid)
+     const category = categories[categoryId]
+     const categoryProps = Object.values(category.properties)
+
+     const values = categoryProps.reduce((res, { id, type }, i) => {
+       return {
+         ...res,
+         [getPropKeyName(id)]: product.values[i]
+       }
+     }, {})
 
      return {
-       ...category,
-       properties
+       ...product,
+       values
      }
    })
 
 
-const normalize = (array) => {
-  return array.reduce((res, item) => {
-    return {
-      ...res,
-      [item.id]: item
-    }
-  }, {})
+const normalize = (array, getKeyName = (id) => getPropKeyName(id)) =>
+   array.reduce((res, item) => {
+     return {
+       ...res,
+       [getKeyName(item.id)]: item
+     }
+   }, {})
 
-  // return {
-  //   byId,
-  //   allIds: Object.keys(byId)
-  // }
-}
+
+const normalizeProperties = (categories) =>
+   categories.map(category => ({
+     ...category,
+     properties: normalize(category.properties, getPropKeyName)
+   }))
+
 
 const initialValuesEditor = {
   products: [],
@@ -90,16 +123,21 @@ const initialValuesEditor = {
 }
 
 const Editor = ({ data = initialValuesEditor }) => {
+  const properties = normalize(data.properties, getPropKeyName)
+
   const categories = compose(
      normalize,
-     prepareCategories(data.properties)
+     normalizeProperties
   )(data.categories)
 
-  const products = normalize(data.products)
-  console.log(products)
-  // const properties = normalize(data.properties)
+  const products = compose(
+     normalize,
+     setValuesKeysByCategoriesProperties(categories)
+  )(data.products)
 
-  // data.map(item => prepare(item, allProperties))
+  // console.log(properties)
+  // console.log(categories)
+  // console.log(products)
 
   return (
      <div className={styles.catalog}>
@@ -109,14 +147,14 @@ const Editor = ({ data = initialValuesEditor }) => {
             <table className={styles.products}>
               <tbody>
               <tr>
-                {category.properties.map(({ id, title = '' }) => (
-                   <th key={id}>{title}</th>
+                {Object.keys(category.properties).map(id => (
+                   <th key={id}>{properties[id].title}</th>
                 ))}
               </tr>
               {Object.values(products)
                  .filter(({ cid }) => cid === category.id)
                  .map(item => (
-                    <Product key={item.id} {...item} />
+                    <Product key={item.id} {...item} properties={properties}/>
                  ))}
               </tbody>
             </table>
