@@ -60,7 +60,7 @@ const data = {
       ]
     }
   ],
-  products: [
+  rows: [
     {
       id: 1,
       cid: 1,

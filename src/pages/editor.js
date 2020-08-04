@@ -3,6 +3,8 @@ import cn from 'classnames'
 import styles from './editor.module.sass'
 import { compose } from "redux"
 import { PROP_TYPES } from "constants/common"
+import Row from "components/Row"
+import Category from "components/Category"
 
 // const sortByOrder = (a, b) => {
 //   if (!('order' in a) || !('order' in b)) return 0
@@ -34,57 +36,24 @@ import { PROP_TYPES } from "constants/common"
 
 
 const getPropKeyName = (id) => `p${id}`
+const getCategoryKeyName = (id) => `c${id}`
+const getRowKeyName = (id) => `r${id}`
 
 
-const Control = ({ propId, value, property }) => {
-  switch (property.type) {
-    case PROP_TYPES.CHECK:
-      return <input
-         name="isGoing"
-         type="checkbox"
-         checked={value}
-         onChange={() => {
-         }}/>
-
-    default:
-      return value
-  }
-}
-
-const Product = ({ id, cid, values, properties }) => {
-  return (
-     <tr>
-       {Object.entries(values).map(([propId, value]) => {
-         const property = properties[propId]
-         const { style } = property
-
-         return (
-            <td
-               key={propId}
-               style={style}
-            >
-              <Control propId={propId} value={value} property={property}/>
-            </td>
-         )
-       })
-       }
-     </tr>
-  )
-}
 
 
-const Category = ({ title = '' }) => {
-  return (
-     <div className={styles.title}>{title}</div>
-  )
-}
 
 
-const setValuesKeysByCategoriesProperties = (categories) => (products) =>
+
+
+
+const normalizeValuesByCategoriesProps = (categories) => (products) =>
    products.map(product => {
-     const categoryId = getPropKeyName(product.cid)
-     const category = categories[categoryId]
-     const categoryProps = Object.values(category.properties)
+     const categoryKey = getCategoryKeyName(product.cid)
+
+     const category = categories.byKey[categoryKey]
+     console.log(category)
+     const categoryProps = category.properties.values
 
      const values = categoryProps.reduce((res, { id, type }, i) => {
        return {
@@ -100,19 +69,30 @@ const setValuesKeysByCategoriesProperties = (categories) => (products) =>
    })
 
 
-const normalize = (array, getKeyName = (id) => getPropKeyName(id)) =>
-   array.reduce((res, item) => {
-     return {
-       ...res,
-       [getKeyName(item.id)]: item
-     }
-   }, {})
+const normalize = (getKeyName = (id) => getPropKeyName(id)) => (array) => {
+  const byKey = array.reduce((res, item) => {
+    return {
+      ...res,
+      [getKeyName(item.id)]: item
+    }
+  }, {})
+
+  return {
+    byKey,
+    get values() {
+      return Object.values(this.byKey)
+    },
+    get keys() {
+      return Object.keys(this.byKey)
+    }
+  }
+}
 
 
 const normalizeProperties = (categories) =>
    categories.map(category => ({
      ...category,
-     properties: normalize(category.properties, getPropKeyName)
+     properties: normalize(getPropKeyName)(category.properties)
    }))
 
 
@@ -123,41 +103,63 @@ const initialValuesEditor = {
 }
 
 const Editor = ({ data = initialValuesEditor }) => {
-  const properties = normalize(data.properties, getPropKeyName)
+  function renderCategoryProps(categoryProps, allProps) {
+    return (
+       <tr>
+         {categoryProps.keys.map(key => {
+           const { id, title } = allProps.byKey[key]
+           return (
+              <th key={id}>{title}</th>
+           )
+         })}
+       </tr>
+    )
+  }
+
+  function renderRowsByCategoryId(categoryId, rows) {
+    return rows.values
+       .filter(({ cid }) => cid === categoryId)
+       .map(row => (
+          <Row key={row.id} {...row}/>
+       ))
+  }
+
+  const properties = normalize(getPropKeyName)(data.properties)
 
   const categories = compose(
-     normalize,
+     normalize(getCategoryKeyName),
      normalizeProperties
   )(data.categories)
 
-  const products = compose(
-     normalize,
-     setValuesKeysByCategoriesProperties(categories)
-  )(data.products)
+  const rows = compose(
+     normalize(getRowKeyName)
+     // normalizeValuesByCategoriesProps(categories)
+  )(data.rows)
 
-  // console.log(properties)
-  // console.log(categories)
-  // console.log(products)
+
+  // console.log('properties', properties, properties.keys, properties.values)
+  // console.log('categories', categories, categories.keys, categories.values)
+  // console.log(
+  //    'categories properties',
+  //    categories.values[0].properties,
+  //    categories.values[0].properties.keys,
+  //    categories.values[0].properties.values
+  // )
+  // console.log('rows', rows, rows.keys, rows.values)
+
 
   return (
      <div className={styles.catalog}>
-       {Object.values(categories).map(category => (
-          <div key={category.id} className={styles.category}>
+       {categories.values.map(category => (
+          <div key={category.id} className={styles.block}>
             <Category {...category}/>
             <table className={styles.products}>
               <tbody>
-              <tr>
-                {Object.keys(category.properties).map(id => (
-                   <th key={id}>{properties[id].title}</th>
-                ))}
-              </tr>
-              {Object.values(products)
-                 .filter(({ cid }) => cid === category.id)
-                 .map(item => (
-                    <Product key={item.id} {...item} properties={properties}/>
-                 ))}
+              {renderCategoryProps(category.properties, properties)}
+              {/*{renderRowsByCategoryId(category.id, rows)}*/}
               </tbody>
             </table>
+            <div className={styles.btn}>+ Добавить</div>
           </div>
        ))}
      </div>

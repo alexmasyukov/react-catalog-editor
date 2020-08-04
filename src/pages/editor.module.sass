@@ -3,30 +3,52 @@
   font-size: 16px
   justify-content: space-between
 
-.category
+.block
   padding: 15px
+  display: flex
+  flex-wrap: wrap
+
+.category
+  display: flex
+  width: 100%
+  justify-content: space-between
+  margin-bottom: 15px
   .title
-    padding-left: 20px
     font-size: 22px
     font-weight: bold
-    margin-bottom: 15px
 
-.w100
-  width: 100%
 
 .products
   width: 100%
   border-collapse: collapse
+  margin-bottom: 10px
   th, td
     border: 1px solid #eee
-    padding: 14px 20px
+    padding: 10px 10px
   th
-    padding-top: 12px
-    padding-bottom: 12px
+    padding: 6px 10px
+    background-color: #343a40
     text-align: left
     font-size: 14px
-    background-color: #69af4c2e
+    color: #fff
+    border: 0
   tr:nth-child(even)
     background-color: #f9f9f9
   tr:hover
     background-color: #f6f6f6
+
+
+.btns
+  display: flex
+  .btn:last-of-type
+    padding-right: 0
+
+.btn
+  border-radius: 4px
+  //background: dodgerblue
+  //color: #ffffff
+  text-decoration: underline
+  padding: 4px 8px
+  font-size: 14px
+  cursor: pointer
+  align-self: flex-end
