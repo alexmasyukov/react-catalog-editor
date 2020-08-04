@@ -1,15 +1,15 @@
 import React from 'react'
 import { PROP_TYPES } from "constants/common"
 
-const DynamicControl = ({ propId, value, property }) => {
+const DynamicControl = ({ rowKey, colKey, value, property, onChange }) => {
   switch (property.type) {
     case PROP_TYPES.CHECK:
-      return <input
-         name="isGoing"
-         type="checkbox"
-         checked={value}
-         onChange={() => {
-         }}/>
+      return (
+         <input
+            type="checkbox"
+            checked={value}
+            onChange={onChange(rowKey, colKey, property.type)}/>
+      )
 
     default:
       return value

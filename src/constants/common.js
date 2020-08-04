@@ -2,5 +2,6 @@ export const PROP_TYPES = {
   CHECK: 'CHECK',
   STRING: 'STRING',
   NUMBER: 'NUMBER',
-  LABEL: 'LABEL'
+  LABEL: 'LABEL',
+  TEXT: 'TEXT',
 }
