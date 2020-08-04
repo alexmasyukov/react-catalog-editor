@@ -4,7 +4,7 @@ import styles from './editor.module.sass'
 // import { compose } from "redux"
 import Category from "components/Category"
 import { PropertiesProvider } from "components/PropertiesContext"
-import { getCategoryKeyName, getPropKeyName, getRowKeyName } from "helpers"
+import { assignWithEmptyShema, getCategoryKeyName, getPropKeyName, getRowKeyName } from "helpers"
 // import Rows from "components/Rows"
 
 // const sortByOrder = (a, b) => {
@@ -79,15 +79,16 @@ const normalize = (getKeyName = (id) => getPropKeyName(id)) => (array) => {
     }
   }, {})
 
-  return {
-    byKey,
-    get values() {
-      return Object.values(this.byKey)
-    },
-    get keys() {
-      return Object.keys(this.byKey)
-    }
-  }
+  // console.log(Object.assign(emptyRow, {byKey}))
+
+  // return Object.assign(emptyRow, {byKey})
+  return assignWithEmptyShema(byKey)
+    // byKey,
+    // values: emptyRow.values,
+    // get keys() {
+    //   return Object.keys(this.byKey)
+    // }
+  // }
 }
 
 

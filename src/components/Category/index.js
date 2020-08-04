@@ -1,9 +1,10 @@
-import React, { useState } from "react"
+import React, { useState, useContext } from "react"
 import cn from 'classnames'
 import Properties from "components/Properties"
 import Row from "components/Row"
 import styles from "pages/editor.module.sass"
-import { getRowKeyName } from "helpers"
+import { assignWithEmptyShema, getPropKeyName, getRowKeyName } from "helpers"
+import { PropertiesContext } from "components/PropertiesContext"
 
 const AddRowButton = ({ onClick }) => (
    <div className={styles.btn} onClick={onClick}>+ Добавить товар</div>
@@ -11,18 +12,32 @@ const AddRowButton = ({ onClick }) => (
 
 const Category = ({ title = '', id, rows: initialRows }) => {
   const [rows, setRows] = useState(initialRows)
+  const properties = useContext(PropertiesContext)
+  console.log('rows', rows, id)
 
   const handleClickAddProduct = () => {
     const lastIndex = rows.values.length
-    const emptyRow = {}
+    const values = properties.values.reduce((res, prop) => ({
+      ...res,
+      [getPropKeyName(prop.id)]: prop.default
+    }), {})
+    const newRow = {
+      id: id + lastIndex,
+      cid: id,
+      values
+    }
 
-    setRows({
-      ...rows,
-      byId: {
-        ...rows.byId,
-        [getRowKeyName(lastIndex)]: emptyRow
-      }
+    console.log(rows, newRow, rows.values.length, getRowKeyName(newRow.id))
+
+    const newRows = assignWithEmptyShema({
+      ...rows.byKey,
+      [getRowKeyName(newRow.id)]: newRow
     })
+    // setRows(rowsUpdate)
+
+    console.log(newRows)
+
+    setRows(newRows)
   }
 
   return (
