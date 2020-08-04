@@ -1,10 +1,11 @@
 import React from 'react'
-import cn from 'classnames'
+// import cn from 'classnames'
 import styles from './editor.module.sass'
 import { compose } from "redux"
-import { PROP_TYPES } from "constants/common"
+// import { PROP_TYPES } from "constants/common"
 import Row from "components/Row"
 import Category from "components/Category"
+import { PropertiesProvider } from "components/PropertiesContext"
 
 // const sortByOrder = (a, b) => {
 //   if (!('order' in a) || !('order' in b)) return 0
@@ -40,22 +41,13 @@ const getCategoryKeyName = (id) => `c${id}`
 const getRowKeyName = (id) => `r${id}`
 
 
-
-
-
-
-
-
-
 const normalizeValuesByCategoriesProps = (categories) => (products) =>
    products.map(product => {
      const categoryKey = getCategoryKeyName(product.cid)
-
      const category = categories.byKey[categoryKey]
-     console.log(category)
      const categoryProps = category.properties.values
 
-     const values = categoryProps.reduce((res, { id, type }, i) => {
+     const values = categoryProps.reduce((res, { id }, i) => {
        return {
          ...res,
          [getPropKeyName(id)]: product.values[i]
@@ -116,12 +108,17 @@ const Editor = ({ data = initialValuesEditor }) => {
     )
   }
 
-  function renderRowsByCategoryId(categoryId, rows) {
-    return rows.values
-       .filter(({ cid }) => cid === categoryId)
-       .map(row => (
-          <Row key={row.id} {...row}/>
-       ))
+  function renderRowsByCategoryId(categoryKey, rows) {
+    console.log(categoryKey)
+    return rows.keys
+       .filter(key => key === categoryKey)
+       .map(key => {
+         const row = rows.byKey[key]
+         console.log(row)
+         return (
+            <Row key={row.id} {...row}/>
+         )
+       })
   }
 
   const properties = normalize(getPropKeyName)(data.properties)
@@ -132,8 +129,8 @@ const Editor = ({ data = initialValuesEditor }) => {
   )(data.categories)
 
   const rows = compose(
-     normalize(getRowKeyName)
-     // normalizeValuesByCategoriesProps(categories)
+     normalize(getRowKeyName),
+     normalizeValuesByCategoriesProps(categories)
   )(data.rows)
 
 
@@ -145,24 +142,26 @@ const Editor = ({ data = initialValuesEditor }) => {
   //    categories.values[0].properties.keys,
   //    categories.values[0].properties.values
   // )
-  // console.log('rows', rows, rows.keys, rows.values)
+  console.log('rows', rows, rows.keys, rows.values)
 
 
   return (
-     <div className={styles.catalog}>
-       {categories.values.map(category => (
-          <div key={category.id} className={styles.block}>
-            <Category {...category}/>
-            <table className={styles.products}>
-              <tbody>
-              {renderCategoryProps(category.properties, properties)}
-              {/*{renderRowsByCategoryId(category.id, rows)}*/}
-              </tbody>
-            </table>
-            <div className={styles.btn}>+ Добавить</div>
-          </div>
-       ))}
-     </div>
+     <PropertiesProvider value={properties}>
+       <div className={styles.catalog}>
+         {categories.values.map(category => (
+            <div key={category.id} className={styles.block}>
+              <Category {...category}/>
+              <table className={styles.products}>
+                <tbody>
+                {renderCategoryProps(category.properties, properties)}
+                {renderRowsByCategoryId(getCategoryKeyName(category.id), rows)}
+                </tbody>
+              </table>
+              <div className={styles.btn}>+ Добавить</div>
+            </div>
+         ))}
+       </div>
+     </PropertiesProvider>
   )
 }
 

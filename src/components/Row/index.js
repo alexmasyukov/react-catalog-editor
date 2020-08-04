@@ -7,7 +7,7 @@ const Row = ({ id, cid, values }) => {
 
   return (
      <tr>
-       {values.values.map(([propKey, value]) => {
+       {Object.entries(values).map(([propKey, value]) => {
          const property = properties.byKey[propKey]
          const { style } = property
 
