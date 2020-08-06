@@ -1,14 +1,9 @@
 import React from 'react'
-
 const PropertiesContext = React.createContext({})
 
-const {
-  Provider: PropertiesProvider,
-  Consumer: PropertiesConsumer
-} = PropertiesContext
+const { Provider: PropertiesProvider } = PropertiesContext
 
 export {
   PropertiesContext,
-  PropertiesProvider,
-  PropertiesConsumer
+  PropertiesProvider
 }

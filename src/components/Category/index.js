@@ -10,10 +10,9 @@ const AddRowButton = ({ onClick }) => (
    <div className={styles.btn} onClick={onClick}>+ Добавить товар</div>
 )
 
-const Category = ({ title = '', id, rows: initialRows }) => {
+const Category = ({ title = '', id, rows: initialRows,  handleCellClick }) => {
   const [rows, setRows] = useState(initialRows)
   const properties = useContext(PropertiesContext)
-  console.log('rows', rows, id)
 
   const handleClickAddProduct = () => {
     const lastIndex = rows.values.length
@@ -21,21 +20,20 @@ const Category = ({ title = '', id, rows: initialRows }) => {
       ...res,
       [getPropKeyName(prop.id)]: prop.default
     }), {})
+    const newId = id + lastIndex
     const newRow = {
-      id: id + lastIndex,
+      id: newId,
       cid: id,
-      values
+      values: {
+        ...values,
+        [getPropKeyName(1)]: newId,
+      }
     }
-
-    console.log(rows, newRow, rows.values.length, getRowKeyName(newRow.id))
 
     const newRows = assignWithEmptyShema({
       ...rows.byKey,
       [getRowKeyName(newRow.id)]: newRow
     })
-    // setRows(rowsUpdate)
-
-    console.log(newRows)
 
     setRows(newRows)
   }
@@ -61,7 +59,7 @@ const Category = ({ title = '', id, rows: initialRows }) => {
               <tbody>
               <Properties/>
               {Object.entries(rows.byKey).map(([key, value]) => (
-                 <Row key={key} rowKey={key} {...value}/>
+                 <Row  handleCellClick={ handleCellClick} key={key} rowKey={key} {...value}/>
               ))}
               </tbody>
             </table>
@@ -72,4 +70,4 @@ const Category = ({ title = '', id, rows: initialRows }) => {
   )
 }
 
-export default Category
+export default React.memo(Category)

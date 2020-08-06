@@ -14,6 +14,7 @@ const data = {
     {
       id: 2,
       title: 'Название',
+      type: PROP_TYPES.STRING,
       default: '',
       order: 2
     },
