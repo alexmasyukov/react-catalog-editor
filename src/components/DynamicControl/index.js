@@ -3,46 +3,54 @@ import { PROP_TYPES } from "constants/common"
 import { EditContext } from "components/EditContext"
 import styles from './dynamiccontrol.module.sass'
 
+const INPUT_TYPES = {
+  TEXTAREA: 'TEXTAREA',
+  INPUT: 'INPUT'
+}
 
 const Edit = ({
-                initialValue, number = false, onEnter = {}, style = {}
+                initialValue,
+                inputType = INPUT_TYPES.INPUT,
+                number = false,
+                onEnter = {}
               }) => {
   const [value, setValue] = useState(initialValue)
 
-  return (
-     <input
-        autoFocus={true}
-        className={styles.edit}
-        type={number ? 'number' : 'text'}
-        onChange={({ target: { value } }) => setValue(value)}
-        onKeyPress={({ target: { value }, key }) =>
-           key === 'Enter' ? onEnter(value) : false
-        }
-        onBlur={({ target: { value } }) => onEnter(value)}
-        value={value}
-        style={style}
-     />
-  )
+  switch (inputType) {
+    case INPUT_TYPES.TEXTAREA:
+      return (
+         <textarea
+            autoFocus={true}
+            rows={1}
+            defaultValue={value}
+            onChange={({ target: { value } }) => setValue(value)}
+            onKeyPress={({ target: { value }, key }) =>
+               key === 'Enter' ? onEnter(value) : false
+            }
+            onBlur={({ target: { value } }) => onEnter(value)}
+         />
+      )
+
+    case INPUT_TYPES.INPUT:
+      return (
+         <input
+            autoFocus={true}
+            className={styles.edit}
+            type={number ? 'number' : 'text'}
+            onChange={({ target: { value } }) => setValue(value)}
+            onKeyPress={({ target: { value }, key }) =>
+               key === 'Enter' ? onEnter(value) : false
+            }
+            onBlur={({ target: { value } }) => onEnter(value)}
+            value={value}
+         />
+      )
+  }
 }
 
 
-const Textarea = ({ initialValue }) => {
-  const [value, setValue] = useState(initialValue)
-  return (
-     <textarea
-        autoFocus={true}
-        rows={1}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-     />
-  )
-}
-
-
-const DynamicControl = ({ rowKey, colKey, isEdit = {}, value, property, onChange, onEnter }) => {
+const DynamicControl = ({ rowKey, colKey, isEdit = false, value, property, onChange, onEnter }) => {
   const editContext = useContext(EditContext)
-  const { edit = false, height = 0, width = 0 } = isEdit
-  const style = { height, width }
 
   switch (property.type) {
     case PROP_TYPES.CHECK:
@@ -54,32 +62,30 @@ const DynamicControl = ({ rowKey, colKey, isEdit = {}, value, property, onChange
       )
 
     case PROP_TYPES.STRING:
-      if (edit) {
+      if (isEdit) {
         return <Edit
            initialValue={value}
            onEnter={onEnter}
-           style={style}
         />
       }
       return value
 
     case PROP_TYPES.NUMBER:
-      if (edit) {
+      if (isEdit) {
         return <Edit
            initialValue={value}
-           number={true}
            onEnter={onEnter}
-           style={style}
+           number={true}
         />
       }
       return value
 
     case PROP_TYPES.TEXT:
-      if (edit) {
-        return <Textarea
+      if (isEdit) {
+        return <Edit
            initialValue={value}
            onEnter={onEnter}
-           style={style}
+           inputType={INPUT_TYPES.TEXTAREA}
         />
       }
       return value
@@ -89,4 +95,4 @@ const DynamicControl = ({ rowKey, colKey, isEdit = {}, value, property, onChange
   }
 }
 
-export default React.memo(DynamicControl)
+export default DynamicControl
