@@ -10,7 +10,7 @@ const AddRowButton = ({ onClick }) => (
    <div className={styles.btn} onClick={onClick}>+ Добавить товар</div>
 )
 
-const Category = ({ title = '', id, rows: initialRows,  handleCellClick }) => {
+const Category = ({ title = '', id, rows: initialRows }) => {
   const [rows, setRows] = useState(initialRows)
   const properties = useContext(PropertiesContext)
 
@@ -26,7 +26,7 @@ const Category = ({ title = '', id, rows: initialRows,  handleCellClick }) => {
       cid: id,
       values: {
         ...values,
-        [getPropKeyName(1)]: newId,
+        [getPropKeyName(1)]: newId
       }
     }
 
@@ -59,7 +59,7 @@ const Category = ({ title = '', id, rows: initialRows,  handleCellClick }) => {
               <tbody>
               <Properties/>
               {Object.entries(rows.byKey).map(([key, value]) => (
-                 <Row  handleCellClick={ handleCellClick} key={key} rowKey={key} {...value}/>
+                 <Row key={key} rowKey={key} {...value}/>
               ))}
               </tbody>
             </table>

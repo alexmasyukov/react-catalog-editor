@@ -1,34 +1,87 @@
-import React, { useState } from 'react'
+import React, { useReducer } from 'react'
 import cn from 'classnames'
-import styles from './../../pages/editor.module.sass'
-
 import DynamicControl from "components/DynamicControl"
+import styles from './../../pages/editor.module.sass'
+import { PROP_TYPES } from "constants/common"
+
+const TYPES = {
+  EDIT_START: 'EDIT_START',
+  EDIT_COMPLETE: 'EDIT_COMPLETE'
+}
+
+const initialState = {
+  isEdit: false,
+  value: undefined
+}
+
+const reducer = (state = initialState, action) => {
+  switch (action.type) {
+    case TYPES.EDIT_COMPLETE:
+      return {
+        ...state,
+        isEdit: false,
+        value: action.value
+      }
+
+    case TYPES.EDIT_START:
+      return {
+        ...state,
+        isEdit: true
+      }
+
+    default:
+      return state
+  }
+}
 
 
-const Cell = ({ property, rowKey, colKey, value, onChange }) => {
-  const [isEdit, setIsEdit] = useState(false)
+const Cell = ({ property, rowKey, colKey, value: initialValue }) => {
+  const [state, dispatch] = useReducer(reducer, {
+    ...initialState,
+    value: initialValue
+  })
   const { style, default: defaultValue } = property
 
-  const handleCellClick = (e) => {
-    setIsEdit(true)
+  const handleCellClick = () => {
+    dispatch({
+      type: TYPES.EDIT_START
+    })
   }
 
-  const handleCellEnter = () => setIsEdit(false)
+  const handleCellEnter = (value) => {
+    dispatch({
+      type: TYPES.EDIT_COMPLETE,
+      value
+    })
+  }
+
+  const handleToggleCheck = ({ target }) => {
+    // const value = propType === PROP_TYPES.CHECK ? target.checked : target.value
+    dispatch({
+      type: TYPES.EDIT_COMPLETE,
+      value: target.checked
+    })
+  }
+
+  const handlers = {}
+  if (property.type !== PROP_TYPES.CHECK && property.type !== PROP_TYPES.LABEL) {
+    handlers.onClick = handleCellClick
+  }
 
   return (
      <td
         key={colKey}
         style={style}
-        className={cn(isEdit && styles.editCell)}
-        onClick={handleCellClick}
+        className={cn(state.isEdit && styles.editCell)}
+        {...handlers}
      >
        <DynamicControl
           colKey={colKey}
           rowKey={rowKey}
-          isEdit={isEdit}
-          value={value === undefined ? defaultValue : value}
+          isEdit={state.isEdit}
+          value={state.value === undefined ? defaultValue : state.value}
           property={property}
-          onChange={onChange}
+          onToggleCheck={handleToggleCheck} //onChange
           onEnter={handleCellEnter}
        />
      </td>

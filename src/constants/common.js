@@ -5,3 +5,8 @@ export const PROP_TYPES = {
   LABEL: 'LABEL',
   TEXT: 'TEXT',
 }
+
+export const INPUT_TYPES = {
+  TEXTAREA: 'TEXTAREA',
+  INPUT: 'INPUT'
+}

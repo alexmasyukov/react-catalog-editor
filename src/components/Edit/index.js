@@ -1,0 +1,46 @@
+import React, { useState } from "react"
+import { INPUT_TYPES } from "constants/common"
+import styles from "pages/editor.module.sass"
+
+const Edit = ({
+                initialValue,
+                inputType = INPUT_TYPES.INPUT,
+                number = false,
+                onEnter = {}
+              }) => {
+  const [value, setValue] = useState(initialValue)
+
+  switch (inputType) {
+    case INPUT_TYPES.TEXTAREA:
+      return (
+         <textarea
+            className={styles.edit}
+            autoFocus
+            defaultValue={value}
+            rows={1}
+            onChange={({ target: { value } }) => setValue(value)}
+            onKeyPress={({ target: { value }, key }) =>
+               key === 'Enter' ? onEnter(value) : false
+            }
+            onBlur={({ target: { value } }) => onEnter(value)}
+         />
+      )
+
+    case INPUT_TYPES.INPUT:
+      return (
+         <input
+            className={styles.edit}
+            autoFocus
+            type={number ? 'number' : 'text'}
+            onChange={({ target: { value } }) => setValue(value)}
+            onKeyPress={({ target: { value }, key }) =>
+               key === 'Enter' ? onEnter(value) : false
+            }
+            onBlur={({ target: { value } }) => onEnter(value)}
+            value={value}
+         />
+      )
+  }
+}
+
+export default Edit

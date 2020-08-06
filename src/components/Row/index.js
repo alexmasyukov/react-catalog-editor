@@ -1,27 +1,14 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import { PropertiesContext } from "components/PropertiesContext"
-import { PROP_TYPES } from "constants/common"
 import Cell from "components/Cell"
 
-const Row = ({ rowKey, values, handleCellClick }) => {
-  const [row, setRow] = useState(values)
+const Row = ({ rowKey, values }) => {
   const properties = useContext(PropertiesContext)
-
-  const handleChange = (colKey, propType) => (event) => {
-    const target = event.target
-    const value = propType === PROP_TYPES.CHECK ? target.checked : target.value
-
-    setRow({
-      ...row,
-      [colKey]: value
-    })
-  }
 
   return (
      <tr>
-       {Object.entries(row).map(([colKey, value]) => {
+       {Object.entries(values).map(([colKey, value]) => {
          const property = properties.byKey[colKey]
-
          return (
             <Cell
                key={rowKey + colKey}
@@ -29,8 +16,6 @@ const Row = ({ rowKey, values, handleCellClick }) => {
                property={property}
                rowKey={rowKey}
                colKey={colKey}
-               onCellClick={handleCellClick}
-               onChange={handleChange}
             />
          )
        })}
@@ -38,4 +23,4 @@ const Row = ({ rowKey, values, handleCellClick }) => {
   )
 }
 
-export default React.memo(Row)
+export default Row

@@ -1,55 +1,10 @@
-import React, { useContext, useState } from 'react'
-import { PROP_TYPES } from "constants/common"
+import React, { useContext } from 'react'
+import { INPUT_TYPES, PROP_TYPES } from "constants/common"
 import { EditContext } from "components/EditContext"
-import styles from './dynamiccontrol.module.sass'
-
-const INPUT_TYPES = {
-  TEXTAREA: 'TEXTAREA',
-  INPUT: 'INPUT'
-}
-
-const Edit = ({
-                initialValue,
-                inputType = INPUT_TYPES.INPUT,
-                number = false,
-                onEnter = {}
-              }) => {
-  const [value, setValue] = useState(initialValue)
-
-  switch (inputType) {
-    case INPUT_TYPES.TEXTAREA:
-      return (
-         <textarea
-            autoFocus={true}
-            rows={1}
-            defaultValue={value}
-            onChange={({ target: { value } }) => setValue(value)}
-            onKeyPress={({ target: { value }, key }) =>
-               key === 'Enter' ? onEnter(value) : false
-            }
-            onBlur={({ target: { value } }) => onEnter(value)}
-         />
-      )
-
-    case INPUT_TYPES.INPUT:
-      return (
-         <input
-            autoFocus={true}
-            className={styles.edit}
-            type={number ? 'number' : 'text'}
-            onChange={({ target: { value } }) => setValue(value)}
-            onKeyPress={({ target: { value }, key }) =>
-               key === 'Enter' ? onEnter(value) : false
-            }
-            onBlur={({ target: { value } }) => onEnter(value)}
-            value={value}
-         />
-      )
-  }
-}
+import Edit from "components/Edit"
 
 
-const DynamicControl = ({ rowKey, colKey, isEdit = false, value, property, onChange, onEnter }) => {
+const DynamicControl = ({ rowKey, colKey, isEdit = false, value, property, onToggleCheck, onEnter }) => {
   const editContext = useContext(EditContext)
 
   switch (property.type) {
@@ -58,7 +13,7 @@ const DynamicControl = ({ rowKey, colKey, isEdit = false, value, property, onCha
          <input
             type="checkbox"
             checked={value}
-            onChange={onChange(colKey, property.type)}/>
+            onChange={onToggleCheck}/>
       )
 
     case PROP_TYPES.STRING:
