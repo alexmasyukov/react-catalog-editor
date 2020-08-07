@@ -1,30 +1,37 @@
-import React, { useState } from 'react'
+import React from 'react'
 import Category from "components/Category"
 import { PropertiesProvider } from "components/PropertiesContext"
-import { EditProvider } from "components/EditContext"
 import {
+  addToKey,
   assignWithEmptyShema,
+  compose,
   getCategoryKeyName,
-  getPropKeyName,
-  getRowKeyName
+  getPropKeyName
 } from "helpers"
 import styles from './editor.module.sass'
+import { PROP_TYPES } from "constants/common"
 
 
-const normalizeValuesByProperties = (properties) => (products) =>
-   products.map(product => {
-     const values = properties.keys.reduce((res, key, i) => {
-       return {
-         ...res,
-         [key]: product.values[i]
-       }
-     }, {})
+// const normalizeValuesByProperties = (properties) => (products) =>
+//    products.map(product => {
+//      const values = properties.keys.reduce((res, key, i) => {
+//        return {
+//          ...res,
+//          [key]: product.values[i]
+//        }
+//      }, {})
+//
+//      return {
+//        ...product,
+//        values
+//      }
+//    })
 
-     return {
-       ...product,
-       values
-     }
-   })
+const normalizeValuesByKeys = (keys, values) =>
+   keys.reduce((res, key, i) => ({
+     ...res,
+     [key]: values[i]
+   }), {})
 
 
 const normalize = (getKeyName = (id) => getPropKeyName(id)) => (array) => {
@@ -37,6 +44,9 @@ const normalize = (getKeyName = (id) => getPropKeyName(id)) => (array) => {
   return assignWithEmptyShema(byKey)
 }
 
+const getKeyByPropType = (propType, properties) =>
+   properties.keys.filter(key => properties.byKey[key].type === propType)
+
 
 const initialValuesEditor = {
   products: [],
@@ -44,42 +54,29 @@ const initialValuesEditor = {
   categories: []
 }
 
-
 const Editor = ({ data = initialValuesEditor }) => {
-  const [editCell, setEditCell] = useState(false)
-
   const properties = normalize(getPropKeyName)(data.properties)
+  // addToKey('keyId', getKeyByPropType(PROP_TYPES.ID)),
+  // addToKey('keyCid', getKeyByPropType(PROP_TYPES.CATEGORY_ID)),
   const categories = normalize(getCategoryKeyName)(data.categories)
-  const rows = normalizeValuesByProperties(properties)(data.rows)
+  const rows = data.rows.map(row => normalizeValuesByKeys(properties.keys, row))
 
-  const getRowsByCategoryId = (cid) => {
-    const categoryRows = rows.filter(row => row.cid === cid)
-    return normalize(getRowKeyName)(categoryRows)
-  }
+  const propertiesIdKey = getKeyByPropType(PROP_TYPES.ID, properties)
+  const propertiesCidKey = getKeyByPropType(PROP_TYPES.CATEGORY_ID, properties)
 
-  const handleCellClick = (rowKey, colKey) => (e) => {
-    console.log('click on', rowKey, colKey)
-    setEditCell({
-      rowKey,
-      colKey
-    })
-  }
+  const getRowsByCategoryId = (cid) =>
+     rows.filter(row => row[propertiesCidKey] === cid)
 
   return (
      <div className={styles.catalog}>
        <PropertiesProvider value={properties}>
-         <EditProvider value={{
-           editCell
-         }}>
-           {categories.values.map(category => (
-              <Category
-                 key={category.id}
-                 rows={getRowsByCategoryId(category.id)}
-                 handleCellClick={handleCellClick}
-                 {...category}
-              />
-           ))}
-         </EditProvider>
+         {categories.values.map(category => (
+            <Category
+               key={category.id}
+               rows={getRowsByCategoryId(category.id)}
+               {...category}
+            />
+         ))}
        </PropertiesProvider>
      </div>
   )

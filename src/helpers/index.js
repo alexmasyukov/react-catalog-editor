@@ -17,18 +17,15 @@ export const itemMove = (array, from, to) => {
   update[to] = array[from]
   update[from] = array[to]
   return update
-
-  // const prevOrNext = array[to]
-  //
-  // const part_one = array.slice(0, from - 1)
-  // const part_two = array.slice(from + 1)
-
-  // console.log('prevOrNext', prevOrNext)
-  // console.log('current', current)
-  // console.log('part_one', part_one)
-  // console.log('part_two', part_two)
-  // const res = [...part_one, current, prevOrNext, ...part_two]
-  // console.log(res)
-
-  // return res
 }
+
+export const compose = (...funcs) => x => funcs.reduceRight((r, f) => f(r), x)
+
+export const addToKey = (key, value) => (source) => {
+  Object.defineProperty(source, key, {
+    value
+  })
+
+  return source
+}
+

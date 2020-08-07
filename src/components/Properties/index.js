@@ -6,7 +6,8 @@ const Properties = () => {
 
   return (
      <tr>
-       {properties.values.map(({ id, title }) => {
+       {properties.values.map(({ id, title, hidden }) => {
+         if (hidden) return null
          return (
             <th key={id}>{title}</th>
          )

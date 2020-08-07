@@ -1,11 +1,8 @@
-import React, { useState, useContext, useEffect } from "react"
+import React, { useState, useContext } from "react"
 import cn from 'classnames'
 import Properties from "components/Properties"
 import Row from "components/Row"
 import {
-  assignWithEmptyShema,
-  getPropKeyName,
-  getRowKeyName,
   itemMove
 } from "helpers"
 import { PropertiesContext } from "components/PropertiesContext"
@@ -17,37 +14,18 @@ const AddRowButton = ({ onClick }) => (
 )
 
 const Category = ({ title = '', id, rows: initialRows }) => {
-  const [rows, setRows] = useState(initialRows.values)
+  const [rows, setRows] = useState(initialRows)
   const properties = useContext(PropertiesContext)
 
   const handleClickAddProduct = () => {
-    const lastIndex = rows.length
-    const values = properties.values.reduce((res, prop) => ({
+    // todo сделать пустую строку в подготовке данных и передать сюда
+    const newRow = properties.keys.reduce((res, key) => ({
       ...res,
-      [getPropKeyName(prop.id)]: prop.default
+      [key]: properties.byKey[key].default
     }), {})
-    const newId = id + lastIndex
-    const newRow = {
-      id: newId,
-      cid: id,
-      values: {
-        ...values,
-        [getPropKeyName(1)]: newId
-      }
-    }
 
-    const newRows = assignWithEmptyShema({
-      ...rows.byKey,
-      [getRowKeyName(newRow.id)]: newRow
-    })
-
-    setRows(newRows)
+    setRows([...rows, newRow])
   }
-
-
-  useEffect(() => {
-    console.log('rows', rows)
-  }, [rows])
 
   const handleRowMoveDown = (idx) => () => {
     const update = itemMove(rows, idx, idx + 1)
@@ -60,7 +38,9 @@ const Category = ({ title = '', id, rows: initialRows }) => {
   }
 
   const handleRowRemove = (idx) => () => {
-
+    const question = window.confirm('Удалить?')
+    if (question)
+      setRows(rows.filter((row, currentIdx) => currentIdx !== idx))
   }
 
   return (
@@ -92,7 +72,7 @@ const Category = ({ title = '', id, rows: initialRows }) => {
                     onRowMoveDown={handleRowMoveDown}
                     onRowMoveUp={handleRowMoveUp}
                     onRowRemove={handleRowRemove}
-                    {...row}
+                    values={row}
                  />
               ))}
               </tbody>

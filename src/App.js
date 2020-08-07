@@ -5,17 +5,18 @@ import { PROP_TYPES } from "constants/common"
 const data = {
   properties: [
     {
-      id: 0,
-      title: '',
-      type: PROP_TYPES.LABEL,
-      default: '',
-      order: 0
+      id: 99,
+      title: 'ID',
+      type: PROP_TYPES.ID,
+      default: '99',
+      order: 1
     },
     {
       id: 1,
-      title: 'ID',
-      type: PROP_TYPES.LABEL,
-      default: '',
+      title: 'CID',
+      type: PROP_TYPES.CATEGORY_ID,
+      hidden: true,
+      default: '99',
       order: 1
     },
     {
@@ -76,7 +77,7 @@ const data = {
       id: 4,
       title: 'Скидка %',
       type: PROP_TYPES.NUMBER,
-      default: 12,
+      default: 12
 
     },
     {
@@ -125,26 +126,10 @@ const data = {
     }
   ],
   rows: [
-    {
-      id: 1,
-      cid: 3,
-      values: [1, 'Шар «Котёнок-единорожка»', 1650, true, true, true, false]
-    },
-    {
-      id: 2,
-      cid: 4,
-      values: [2, 'Шар С Днем Рождения, хром', 100, true, true, false, false]
-    },
-    {
-      id: 3,
-      cid: 4,
-      values: [3, 'Связка Человек Паук', 1200, true, true, true, true]
-    },
-    {
-      id: 4,
-      cid: 4,
-      values: [4, 'Связка красных шаров', 4300, true, false, true, false]
-    }
+    [1, 3, 'Шар «Котёнок-единорожка»', 1650, true, true, true, false],
+    [2, 4, 'Шар С Днем Рождения, хром', 100, true, true, false, false],
+    [3, 4, 'Связка Человек Паук', 1200, true, true, true, true],
+    [4, 4, 'Связка красных шаров', 4300, true, false, true, false]
   ]
 }
 
