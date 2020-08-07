@@ -1,4 +1,4 @@
-import React, { useReducer } from 'react'
+import React, { useEffect, useReducer } from 'react'
 import cn from 'classnames'
 import DynamicControl from "components/DynamicControl"
 import styles from './../../pages/editor.module.sass'
@@ -35,11 +35,19 @@ const reducer = (state = initialState, action) => {
 }
 
 
-const Cell = ({ property, rowKey, colKey, value: initialValue }) => {
+const Cell = ({ property, colKey, value: initialValue }) => {
   const [state, dispatch] = useReducer(reducer, {
     ...initialState,
     value: initialValue
   })
+
+  useEffect(() => {
+    dispatch({
+      type: TYPES.EDIT_COMPLETE,
+      value: initialValue
+    })
+  }, [initialValue])
+
   const { style, default: defaultValue } = property
 
   const handleCellClick = () => {
@@ -77,11 +85,10 @@ const Cell = ({ property, rowKey, colKey, value: initialValue }) => {
      >
        <DynamicControl
           colKey={colKey}
-          rowKey={rowKey}
           isEdit={state.isEdit}
           value={state.value === undefined ? defaultValue : state.value}
           property={property}
-          onToggleCheck={handleToggleCheck} //onChange
+          onToggleCheck={handleToggleCheck}
           onEnter={handleCellEnter}
        />
      </td>

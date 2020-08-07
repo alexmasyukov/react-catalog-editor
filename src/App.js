@@ -5,6 +5,13 @@ import { PROP_TYPES } from "constants/common"
 const data = {
   properties: [
     {
+      id: 0,
+      title: '',
+      type: PROP_TYPES.LABEL,
+      default: '',
+      order: 0
+    },
+    {
       id: 1,
       title: 'ID',
       type: PROP_TYPES.LABEL,
@@ -132,6 +139,11 @@ const data = {
       id: 3,
       cid: 4,
       values: [3, 'Связка Человек Паук', 1200, true, true, true, true]
+    },
+    {
+      id: 4,
+      cid: 4,
+      values: [4, 'Связка красных шаров', 4300, true, false, true, false]
     }
   ]
 }

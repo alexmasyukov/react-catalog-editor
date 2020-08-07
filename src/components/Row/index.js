@@ -1,24 +1,45 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { PropertiesContext } from "components/PropertiesContext"
 import Cell from "components/Cell"
+import CellMoveButtons from "components/CellMoveButtons"
+import CellDeleteButton from "components/CellDeleteButton"
 
-const Row = ({ rowKey, values }) => {
+const Row = ({
+               idx,
+               rowCount,
+               values,
+               onRowMoveDown,
+               onRowMoveUp,
+               onRowRemove
+             }) => {
   const properties = useContext(PropertiesContext)
 
   return (
      <tr>
-       {Object.entries(values).map(([colKey, value]) => {
+       <td>
+         <CellMoveButtons
+            upVisible={idx > 0}
+            downVisible={idx < rowCount}
+            onRowMoveDown={onRowMoveDown(idx)}
+            onRowMoveUp={onRowMoveUp(idx)}
+         />
+       </td>
+       {Object.keys(values).map((colKey, idx) => {
          const property = properties.byKey[colKey]
+         const value = values[colKey]
+
          return (
             <Cell
-               key={rowKey + colKey}
-               value={value}
+               key={idx + colKey}
                property={property}
-               rowKey={rowKey}
                colKey={colKey}
+               value={value}
             />
          )
        })}
+       <td>
+         <CellDeleteButton onRowRemove={onRowRemove}/>
+       </td>
      </tr>
   )
 }
