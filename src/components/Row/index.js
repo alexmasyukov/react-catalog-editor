@@ -1,46 +1,50 @@
-import React, { useContext, useState } from 'react'
-import { PropertiesContext } from "components/PropertiesContext"
+import React, { useContext } from 'react'
+import { ColumnsContext } from "components/ColumnsContext"
 import Cell from "components/Cell"
 import CellMoveButtons from "components/CellMoveButtons"
+import { getPropDefaultValue } from "helpers"
 
 const Row = ({
-               idx,
-               rowCount,
+               id,
                values,
                onRowMoveDown,
                onRowMoveUp,
-               onRowRemove
+               onRowRemove,
+               upVisible,
+               downVisible
              }) => {
-  const properties = useContext(PropertiesContext)
+  const columns = useContext(ColumnsContext)
 
   return (
      <tr>
-       {Object.keys(values).map((colKey, idx) => {
-         const property = properties.byKey[colKey]
+       {Object.keys(values).map((colKey) => {
+         const property = columns.byKey[colKey]
          const value = values[colKey]
 
          if (property.hidden) return null
 
          return (
             <Cell
-               key={idx + colKey}
+               key={id + colKey}
                property={property}
+               rowId={id}
                colKey={colKey}
-               value={value}
+               value={value === undefined ?
+                  getPropDefaultValue(property.default) : value}
             />
          )
        })}
        <td>
          <CellMoveButtons
-            upVisible={idx > 0}
-            downVisible={idx < rowCount}
-            onRowMoveDown={onRowMoveDown(idx)}
-            onRowMoveUp={onRowMoveUp(idx)}
-            onRowRemove={onRowRemove(idx)}
+            upVisible={upVisible}
+            downVisible={downVisible}
+            onRowMoveDown={onRowMoveDown}
+            onRowMoveUp={onRowMoveUp}
+            onRowRemove={onRowRemove}
          />
        </td>
      </tr>
   )
 }
 
-export default Row
+export default React.memo(Row)

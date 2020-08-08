@@ -1,47 +1,23 @@
-import React, { useState, useContext } from "react"
+import React, { useContext } from "react"
 import cn from 'classnames'
-import Properties from "components/Properties"
+import ColumnHeaders from "components/ColumnHeaders"
 import Row from "components/Row"
-import {
-  itemMove
-} from "helpers"
-import { PropertiesContext } from "components/PropertiesContext"
+import { ColumnsContext } from "components/ColumnsContext"
 import styles from "pages/editor.module.sass"
+import { HandlersContext } from "components/HandersContext"
 
 
 const AddRowButton = ({ onClick }) => (
    <div className={styles.btn} onClick={onClick}>+ Добавить товар</div>
 )
 
-const Category = ({ title = '', id, rows: initialRows }) => {
-  const [rows, setRows] = useState(initialRows)
-  const properties = useContext(PropertiesContext)
-
-  const handleClickAddProduct = () => {
-    // todo сделать пустую строку в подготовке данных и передать сюда
-    const newRow = properties.keys.reduce((res, key) => ({
-      ...res,
-      [key]: properties.byKey[key].default
-    }), {})
-
-    setRows([...rows, newRow])
-  }
-
-  const handleRowMoveDown = (idx) => () => {
-    const update = itemMove(rows, idx, idx + 1)
-    setRows(update)
-  }
-
-  const handleRowMoveUp = (idx) => () => {
-    const update = itemMove(rows, idx, idx - 1)
-    setRows(update)
-  }
-
-  const handleRowRemove = (idx) => () => {
-    const question = window.confirm('Удалить?')
-    if (question)
-      setRows(rows.filter((row, currentIdx) => currentIdx !== idx))
-  }
+const Category = ({
+                    title = '',
+                    id,
+                    rows = []
+                  }) => {
+  const handlers = useContext(HandlersContext)
+  const columns = useContext(ColumnsContext)
 
   return (
      <div
@@ -52,7 +28,7 @@ const Category = ({ title = '', id, rows: initialRows }) => {
          <div className={styles.title}>{title}</div>
          <div className={styles.btns}>
            {!rows.length && (
-              <AddRowButton onClick={handleClickAddProduct}/>
+              <AddRowButton onClick={handlers.onClickAddProduct(id)}/>
            )}
            <div className={styles.btn}>Вверх</div>
            <div className={styles.btn}>Вниз</div>
@@ -63,21 +39,22 @@ const Category = ({ title = '', id, rows: initialRows }) => {
           <>
             <table className={styles.products}>
               <tbody>
-              <Properties/>
+              <ColumnHeaders/>
               {rows.map((row, idx) => (
                  <Row
                     key={idx}
-                    idx={idx}
-                    rowCount={rows.length - 1}
-                    onRowMoveDown={handleRowMoveDown}
-                    onRowMoveUp={handleRowMoveUp}
-                    onRowRemove={handleRowRemove}
+                    id={row[columns.idKey]}
+                    onRowMoveDown={handlers.onRowMoveDown(idx)}
+                    onRowMoveUp={handlers.onRowMoveUp(idx)}
+                    onRowRemove={handlers.onRowRemove(idx)}
+                    upVisible={idx > 0}
+                    downVisible={idx < rows.length - 1}
                     values={row}
                  />
               ))}
               </tbody>
             </table>
-            <AddRowButton onClick={handleClickAddProduct}/>
+            <AddRowButton onClick={handlers.onClickAddProduct(id)}/>
           </>
        )}
      </div>

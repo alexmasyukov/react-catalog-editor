@@ -1,7 +1,7 @@
 import React from 'react'
-import { AiOutlineArrowUp, AiOutlineArrowDown, AiOutlineDelete } from "react-icons/ai"
-import styles from 'pages/editor.module.sass'
+import { AiOutlineArrowUp, AiOutlineArrowDown } from "react-icons/ai"
 import CellDeleteButton from "components/CellDeleteButton"
+import styles from 'pages/editor.module.sass'
 
 const CellMoveButtons = ({
                            upVisible = true,

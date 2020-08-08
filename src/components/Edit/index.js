@@ -19,10 +19,8 @@ const Edit = ({
             defaultValue={value}
             rows={1}
             onChange={({ target: { value } }) => setValue(value)}
-            onKeyPress={({ target: { value }, key }) =>
-               key === 'Enter' ? onEnter(value) : false
-            }
-            onBlur={({ target: { value } }) => onEnter(value)}
+            onKeyPress={e => e.key === 'Enter' ? onEnter(e) : false}
+            onBlur={e => onEnter(e)}
          />
       )
 
@@ -33,13 +31,14 @@ const Edit = ({
             autoFocus
             type={number ? 'number' : 'text'}
             onChange={({ target: { value } }) => setValue(value)}
-            onKeyPress={({ target: { value }, key }) =>
-               key === 'Enter' ? onEnter(value) : false
-            }
-            onBlur={({ target: { value } }) => onEnter(value)}
+            onKeyPress={e => e.key === 'Enter' ? onEnter(e) : false}
+            onBlur={e => onEnter(e)}
             value={value}
          />
       )
+
+    default:
+      return value
   }
 }
 

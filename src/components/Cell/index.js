@@ -1,17 +1,17 @@
-import React, { useEffect, useReducer } from 'react'
+import React, { useContext, useEffect, useReducer, useState } from 'react'
 import cn from 'classnames'
 import DynamicControl from "components/DynamicControl"
-import styles from './../../pages/editor.module.sass'
 import { PROP_TYPES } from "constants/common"
+import { HandlersContext } from "components/HandersContext"
+import styles from './../../pages/editor.module.sass'
 
 const TYPES = {
-  EDIT_START: 'EDIT_START',
+  EDIT: 'EDIT',
   EDIT_COMPLETE: 'EDIT_COMPLETE'
 }
 
 const initialState = {
-  isEdit: false,
-  value: undefined
+  isEdit: false
 }
 
 const reducer = (state = initialState, action) => {
@@ -19,11 +19,10 @@ const reducer = (state = initialState, action) => {
     case TYPES.EDIT_COMPLETE:
       return {
         ...state,
-        isEdit: false,
-        value: action.value
+        isEdit: false
       }
 
-    case TYPES.EDIT_START:
+    case TYPES.EDIT:
       return {
         ...state,
         isEdit: true
@@ -35,65 +34,50 @@ const reducer = (state = initialState, action) => {
 }
 
 
-const Cell = ({ property, colKey, value: initialValue }) => {
-  const [state, dispatch] = useReducer(reducer, {
-    ...initialState,
-    value: initialValue
-  })
+const Cell = ({ property, colKey, rowId, value }) => {
+  // const [state, dispatch] = useReducer(reducer, initialState)
+  const [isEdit, setIsEdit] = useState(false)
+  const handlers = useContext(HandlersContext)
+  const { style } = property
 
   useEffect(() => {
-    dispatch({
-      type: TYPES.EDIT_COMPLETE,
-      value: initialValue
-    })
-  }, [initialValue])
-
-  const { style, default: defaultValue } = property
+    setIsEdit(false)
+  //   dispatch({
+  //     type: TYPES.EDIT_COMPLETE
+  //   })
+  }, [value])
 
   const handleCellClick = () => {
-    dispatch({
-      type: TYPES.EDIT_START
-    })
+    setIsEdit(true)
+    // dispatch({
+    //   type: TYPES.EDIT
+    // })
   }
 
-  const handleCellEnter = (value) => {
-    dispatch({
-      type: TYPES.EDIT_COMPLETE,
-      value
-    })
-  }
 
-  const handleToggleCheck = ({ target }) => {
-    // const value = propType === PROP_TYPES.CHECK ? target.checked : target.value
-    dispatch({
-      type: TYPES.EDIT_COMPLETE,
-      value: target.checked
-    })
-  }
-
-  const handlers = {}
+  const cellHandlers = {}
   if (property.type !== PROP_TYPES.CHECK && property.type !== PROP_TYPES.LABEL) {
-    handlers.onClick = handleCellClick
+    cellHandlers.onClick = handleCellClick
   }
 
   return (
      <td
         key={colKey}
         style={style}
-        className={cn(state.isEdit && styles.editCell)}
-        {...handlers}
+        className={cn(isEdit && styles.editCell)}
+        {...cellHandlers}
      >
        <DynamicControl
+          rowId={rowId}
           colKey={colKey}
-          isEdit={state.isEdit}
-          value={state.value === undefined ? defaultValue : state.value}
+          isEdit={isEdit}
+          value={value}
           property={property}
-          onToggleCheck={handleToggleCheck}
-          onEnter={handleCellEnter}
+          onChange={handlers.onChangeCell}
        />
      </td>
   )
 }
 
 
-export default Cell
+export default React.memo(Cell)

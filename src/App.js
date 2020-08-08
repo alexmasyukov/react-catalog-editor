@@ -1,22 +1,23 @@
 import React from 'react'
 import Editor from "pages/editor"
 import { PROP_TYPES } from "constants/common"
+import { createCounter } from "helpers"
 
 const data = {
-  properties: [
+  columns: [
     {
       id: 99,
       title: 'ID',
       type: PROP_TYPES.ID,
-      default: '99',
+      default: createCounter(2000),
       order: 1
     },
     {
       id: 1,
       title: 'CID',
       type: PROP_TYPES.CATEGORY_ID,
-      hidden: true,
-      default: '99',
+      // hidden: true,
+      default: (cid) => cid,
       order: 1
     },
     {
@@ -77,16 +78,12 @@ const data = {
       id: 4,
       title: 'Скидка %',
       type: PROP_TYPES.NUMBER,
-      default: 12
-
+      default: '12'
     },
     {
       id: 5,
       title: 'Цена со скидкой',
       type: PROP_TYPES.NUMBER,
-      formula(price = 0, sale = 0) {
-        return (price / 100) * (100 - sale)
-      },
       default: ''
     },
     {
@@ -126,17 +123,27 @@ const data = {
     }
   ],
   rows: [
-    [1, 3, 'Шар «Котёнок-единорожка»', 1650, true, true, true, false],
-    [2, 4, 'Шар С Днем Рождения, хром', 100, true, true, false, false],
-    [3, 4, 'Связка Человек Паук', 1200, true, true, true, true],
-    [4, 4, 'Связка красных шаров', 4300, true, false, true, false]
+    [2, 3, 'Шар «Котёнок-единорожка»', 1650, true, true, true, false],
+    [12, 4, 'Шар С Днем Рождения, хром', 100, true, true, false, false],
+    [14, 4, 'Связка Человек Паук', 1200, true, true, true, true],
+    [16, 4, 'Связка красных шаров', 4300, true, false, true, false]
   ]
 }
 
 function App() {
+  const handleOnChange = () => {
+    console.log('handleOnChange')
+    // formula(price = 0, sale = 0) {
+    //   return (price / 100) * (100 - sale)
+    // },
+    // }
+  }
+
   return (
      <div className="App">
-       <Editor data={data}/>
+       <Editor
+          data={data}
+          onChange={handleOnChange}/>
      </div>
   )
 }

@@ -1,6 +1,5 @@
 export const getPropKeyName = (id) => `p${id}`
 export const getCategoryKeyName = (id) => `c${id}`
-export const getRowKeyName = (id) => `r${id}`
 
 export const assignWithEmptyShema = (byKey) => ({
   byKey,
@@ -21,11 +20,14 @@ export const itemMove = (array, from, to) => {
 
 export const compose = (...funcs) => x => funcs.reduceRight((r, f) => f(r), x)
 
-export const addToKey = (key, value) => (source) => {
-  Object.defineProperty(source, key, {
-    value
-  })
-
-  return source
+export function createCounter(start) {
+  let id = start
+  return function () {
+    return id++
+  }
 }
+
+export const getPropDefaultValue = (defaultValue, payload = 'payload') =>
+   typeof (defaultValue) === 'function' ?
+      defaultValue(payload) : defaultValue
 
