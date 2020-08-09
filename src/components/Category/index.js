@@ -3,33 +3,32 @@ import cn from 'classnames'
 import ColumnHeaders from "components/ColumnHeaders"
 import Row from "components/Row"
 import { ColumnsContext } from "components/ColumnsContext"
-import styles from "pages/editor.module.sass"
 import { HandlersContext } from "components/HandersContext"
+import styles from "pages/editor.module.sass"
+import CategoryTitle from "components/CategoryTitle"
+import Btn from "components/Btn"
 
-
-const AddButton = ({ onClick, text = '' }) => (
-   <div className={styles.btn} onClick={onClick}>{text}</div>
-)
 
 const Category = ({
                     title = '',
                     path = '',
                     id,
+                    pid,
                     rows = []
                   }) => {
   const handlers = useContext(HandlersContext)
   const columns = useContext(ColumnsContext)
 
   const addRowButton = (
-     <AddButton
-        text="+ Добавить товар"
+     <Btn
+        title="+ Добавить товар"
         onClick={handlers.onClickAddProduct(id)}
      />
   )
 
   const addChildCategoryButton = (
-     <AddButton
-        text="+ Добавить подкатегорию"
+     <Btn
+        title="+ Добавить подкатегорию"
         onClick={handlers.onClickAddChildCategory(id)}
      />
   )
@@ -40,14 +39,22 @@ const Category = ({
         className={cn(styles.block, rows.length && styles.mb)}
      >
        <div className={styles.category}>
-         <div className={styles.title}>{path}</div>
+         <CategoryTitle
+            categoryId={id}
+            categoryParentId={pid}
+            title={title}
+            path={path}
+            onChange={handlers.onChangeCategory}
+         />
          <div className={styles.btns}>
            {!rows.length && <>
              {addRowButton}
              {addChildCategoryButton}
            </>}
-           <div className={styles.btn}>Вверх</div>
-           <div className={styles.btn}>Вниз</div>
+           <Btn title="Вверх" onClick={() => {
+           }}/>
+           <Btn title="Вниз" onClick={() => {
+           }}/>
          </div>
        </div>
 

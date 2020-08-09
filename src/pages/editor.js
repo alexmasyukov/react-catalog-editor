@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import Category from "components/Category"
 import { ColumnsProvider } from "components/ColumnsContext"
 import { HandlersProvider } from "components/HandersContext"
+import { CategoriesProvider } from "components/CategoriesContext"
 import {
   assignWithEmptyShema,
   getCategoryPath,
@@ -86,8 +87,10 @@ const Editor = ({ data = initialData, onChange }) => {
   columns.cidKey = getKeyByColumnType(COLUMN_TYPES.CATEGORY_ID, columns)
   console.warn('Editor render')
 
+
   const getRowsByCategoryId = (cid) =>
      rows.filter(row => row[columns.cidKey] === cid)
+
 
   const handleClickAddProduct = (cid) => () => {
     console.log('handleClickAddProduct', cid)
@@ -117,12 +120,14 @@ const Editor = ({ data = initialData, onChange }) => {
     setRows([...rows, newRow])
   }
 
+
   const handleRowMoveDown = (idx) => () => {
     console.log('handleRowMoveDown', idx)
 
     const update = itemMove(rows, idx, idx + 1)
     setRows(update)
   }
+
 
   const handleRowMoveUp = (idx) => () => {
     console.log('handleRowMoveUp', idx)
@@ -131,6 +136,7 @@ const Editor = ({ data = initialData, onChange }) => {
     setRows(update)
   }
 
+
   const handleRowRemove = (idx) => () => {
     console.log('handleRowRemove', idx)
 
@@ -138,6 +144,7 @@ const Editor = ({ data = initialData, onChange }) => {
     if (question)
       setRows(rows.filter((row, currentIdx) => currentIdx !== idx))
   }
+
 
   const handleCellOnChange = (rowId, colKey, columnType) => ({ target }) => {
     const value = columnType === COLUMN_TYPES.CHECK ? target.checked : target.value
@@ -155,6 +162,7 @@ const Editor = ({ data = initialData, onChange }) => {
 
     setRows(update)
   }
+
 
   const handleClickAddChildCategory = (id) => () => {
     console.log('handleClickAddChildCategory', id)
@@ -175,26 +183,43 @@ const Editor = ({ data = initialData, onChange }) => {
   }
 
 
+  const handleChangeCategory = (updateCategory) => {
+    console.log('handleChangeCategory', updateCategory)
+
+    const updateCategories = categories.map(category =>
+       category.id === updateCategory.id ? {
+         ...category,
+         ...updateCategory
+       } : category
+    )
+
+    setCategories(setCategoriesPaths(updateCategories))
+  }
+
+
   return (
      <div className={styles.catalog}>
-       <ColumnsProvider value={columns}>
-         <HandlersProvider value={{
-           onChangeCell: handleCellOnChange,
-           onRowMoveDown: handleRowMoveDown,
-           onRowMoveUp: handleRowMoveUp,
-           onRowRemove: handleRowRemove,
-           onClickAddProduct: handleClickAddProduct,
-           onClickAddChildCategory: handleClickAddChildCategory
-         }}>
-           {categories.map(category => (
-              <Category
-                 key={category.id}
-                 rows={getRowsByCategoryId(category.id)}
-                 {...category}
-              />
-           ))}
-         </HandlersProvider>
-       </ColumnsProvider>
+       <CategoriesProvider value={categories}>
+         <ColumnsProvider value={columns}>
+           <HandlersProvider value={{
+             onChangeCell: handleCellOnChange,
+             onRowMoveDown: handleRowMoveDown,
+             onRowMoveUp: handleRowMoveUp,
+             onRowRemove: handleRowRemove,
+             onClickAddProduct: handleClickAddProduct,
+             onClickAddChildCategory: handleClickAddChildCategory,
+             onChangeCategory: handleChangeCategory
+           }}>
+             {categories.map(category => (
+                <Category
+                   key={category.id}
+                   rows={getRowsByCategoryId(category.id)}
+                   {...category}
+                />
+             ))}
+           </HandlersProvider>
+         </ColumnsProvider>
+       </CategoriesProvider>
      </div>
   )
 }

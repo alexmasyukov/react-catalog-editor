@@ -6,7 +6,7 @@ const Edit = ({
                 initialValue,
                 inputType = INPUT_TYPES.INPUT,
                 number = false,
-                onEnter = {}
+                onEnter = () => {}
               }) => {
   const [value, setValue] = useState(initialValue)
 
