@@ -13,6 +13,7 @@ const AddButton = ({ onClick, text = '' }) => (
 
 const Category = ({
                     title = '',
+                    path = '',
                     id,
                     rows = []
                   }) => {
@@ -39,14 +40,12 @@ const Category = ({
         className={cn(styles.block, rows.length && styles.mb)}
      >
        <div className={styles.category}>
-         <div className={styles.title}>{title}</div>
+         <div className={styles.title}>{path}</div>
          <div className={styles.btns}>
-           {!rows.length && (
-              <>
-                {addRowButton}
-                {addChildCategoryButton}
-              </>
-           )}
+           {!rows.length && <>
+             {addRowButton}
+             {addChildCategoryButton}
+           </>}
            <div className={styles.btn}>Вверх</div>
            <div className={styles.btn}>Вниз</div>
          </div>

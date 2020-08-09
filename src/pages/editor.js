@@ -4,7 +4,7 @@ import { ColumnsProvider } from "components/ColumnsContext"
 import { HandlersProvider } from "components/HandersContext"
 import {
   assignWithEmptyShema,
-  getCategoryKeyName,
+  getCategoryPath,
   getColumnDefaultValue,
   getColumnKeyName,
   itemMove
@@ -59,16 +59,32 @@ const initialData = {
   rows: []
 }
 
+const setCategoriesPaths = (categories) => {
+  const getPath = (id) => getCategoryPath(id, categories)
+
+  return categories.map(category => ({
+    ...category,
+    path: getPath(category.id)
+  }))
+}
+
+
 const Editor = ({ data = initialData, onChange }) => {
-  const [columns, setColumns] = useState(normalize(getColumnKeyName)(data.columns))
-  const [categories, setCategories] = useState(data.categories) //normalize(getCategoryKeyName)(
+  const [columns, setColumns] = useState(
+     normalize(getColumnKeyName)(data.columns)
+  )
+  const [categories, setCategories] = useState(
+     setCategoriesPaths(data.categories)
+  )
   const [rows, setRows] = useState(
      data.rows.map(row => normalizeValuesByKeys(columns.keys, row))
   )
   const { helpers } = data
 
+  // todo: БЛЯТЬ !!! Мутация, двойной рендер!!!!
   columns.idKey = getKeyByColumnType(COLUMN_TYPES.ID, columns)
   columns.cidKey = getKeyByColumnType(COLUMN_TYPES.CATEGORY_ID, columns)
+  console.warn('Editor render')
 
   const getRowsByCategoryId = (cid) =>
      rows.filter(row => row[columns.cidKey] === cid)
@@ -100,7 +116,6 @@ const Editor = ({ data = initialData, onChange }) => {
 
     setRows([...rows, newRow])
   }
-
 
   const handleRowMoveDown = (idx) => () => {
     console.log('handleRowMoveDown', idx)
@@ -141,20 +156,22 @@ const Editor = ({ data = initialData, onChange }) => {
     setRows(update)
   }
 
-  const handleClickAddChildCategory = (cid) => () => {
-    console.log('handleClickAddChildCategory', cid)
+  const handleClickAddChildCategory = (id) => () => {
+    console.log('handleClickAddChildCategory', id)
     const newCategory = {
       id: helpers.categoryIdMaker(),
+      pid: id,
       title: 'Новая'
     }
 
-    const idx = categories.findIndex(({ id }) => id === cid)
-
-    setCategories([
+    const idx = categories.findIndex(category => category.id === id)
+    const updatedCategories = [
       ...categories.slice(0, idx + 1),
       newCategory,
       ...categories.slice(idx + 1)
-    ])
+    ]
+
+    setCategories(setCategoriesPaths(updatedCategories))
   }
 
 

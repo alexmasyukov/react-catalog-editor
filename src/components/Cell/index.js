@@ -1,18 +1,9 @@
-import React, { useContext, useEffect, useReducer, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import cn from 'classnames'
 import DynamicControl from "components/DynamicControl"
 import { COLUMN_TYPES } from "constants/common"
 import { HandlersContext } from "components/HandersContext"
 import styles from './../../pages/editor.module.sass'
-
-const TYPES = {
-  EDIT: 'EDIT',
-  EDIT_COMPLETE: 'EDIT_COMPLETE'
-}
-
-const initialState = {
-  isEdit: false
-}
 
 
 const Cell = ({ column, colKey, rowId, value }) => {

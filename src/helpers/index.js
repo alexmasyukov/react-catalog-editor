@@ -31,3 +31,15 @@ export const getColumnDefaultValue = (defaultValue) =>
   typeof (defaultValue) === 'function' ? defaultValue() : defaultValue
 
 
+export const getCategoryById = (id, categories) =>
+   categories.find(category => category.id === id)
+
+
+export const getCategoryPath = (id, categories = [], init = []) => {
+  const category = getCategoryById(id, categories)
+
+  return 'pid' in category ?
+     getCategoryPath(category.pid, categories, [category.title, ...init]) :
+     [category.title, ...init].join(' / ')
+}
+

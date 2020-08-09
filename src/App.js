@@ -7,22 +7,25 @@ const categories = [
   {
     id: 1,
     title: 'Гелиевые шары',
-    order: 1
   },
   {
     id: 2,
-    title: 'Цветные',
-    order: 2
+    pid: 1,
+    title: 'Цветные'
   },
   {
     id: 3,
-    title: 'Матовые',
-    order: 3
+    pid: 1,
+    title: 'Матовые'
+  },
+  {
+    id: 9,
+    pid: 3,
+    title: 'Большие'
   },
   {
     id: 4,
-    title: 'Разное',
-    order: 4
+    title: 'Разное'
   }
 ]
 
