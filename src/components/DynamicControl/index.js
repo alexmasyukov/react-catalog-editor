@@ -1,42 +1,42 @@
 import React  from 'react'
-import { INPUT_TYPES, PROP_TYPES } from "constants/common"
+import { INPUT_TYPES, COLUMN_TYPES } from "constants/common"
 import Edit from "components/Edit"
 
 
-const DynamicControl = ({ rowId, colKey, isEdit = false, value, property, onChange }) => {
-  switch (property.type) {
-    case PROP_TYPES.CHECK:
+const DynamicControl = ({ rowId, colKey, isEdit = false, value, column, onChange }) => {
+  switch (column.type) {
+    case COLUMN_TYPES.CHECK:
       return (
          <input
             type="checkbox"
             checked={value}
-            onChange={onChange(rowId, colKey, property.type)}/>
+            onChange={onChange(rowId, colKey, column.type)}/>
       )
 
-    case PROP_TYPES.STRING:
+    case COLUMN_TYPES.STRING:
       if (isEdit) {
         return <Edit
            initialValue={value}
-           onEnter={onChange(rowId, colKey, property.type)}
+           onEnter={onChange(rowId, colKey, column.type)}
         />
       }
       return value
 
-    case PROP_TYPES.NUMBER:
+    case COLUMN_TYPES.NUMBER:
       if (isEdit) {
         return <Edit
            initialValue={value}
-           onEnter={onChange(rowId, colKey, property.type)}
+           onEnter={onChange(rowId, colKey, column.type)}
            number={true}
         />
       }
       return value
 
-    case PROP_TYPES.TEXT:
+    case COLUMN_TYPES.TEXT:
       if (isEdit) {
         return <Edit
            initialValue={value}
-           onEnter={onChange(rowId, colKey, property.type)}
+           onEnter={onChange(rowId, colKey, column.type)}
            inputType={INPUT_TYPES.TEXTAREA}
         />
       }
@@ -47,4 +47,4 @@ const DynamicControl = ({ rowId, colKey, isEdit = false, value, property, onChan
   }
 }
 
-export default DynamicControl
+export default React.memo(DynamicControl)

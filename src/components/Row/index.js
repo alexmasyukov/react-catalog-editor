@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { ColumnsContext } from "components/ColumnsContext"
 import Cell from "components/Cell"
 import CellMoveButtons from "components/CellMoveButtons"
-import { getPropDefaultValue } from "helpers"
+import { getColumnDefaultValue } from "helpers"
 
 const Row = ({
                id,
@@ -18,19 +18,19 @@ const Row = ({
   return (
      <tr>
        {Object.keys(values).map((colKey) => {
-         const property = columns.byKey[colKey]
+         const column = columns.byKey[colKey]
          const value = values[colKey]
 
-         if (property.hidden) return null
+         if (column.hidden) return null
 
          return (
             <Cell
                key={id + colKey}
-               property={property}
+               column={column}
                rowId={id}
                colKey={colKey}
                value={value === undefined ?
-                  getPropDefaultValue(property.default) : value}
+                  getColumnDefaultValue(column.default) : value}
             />
          )
        })}

@@ -1,4 +1,4 @@
-export const PROP_TYPES = {
+export const COLUMN_TYPES = {
   ID: 'ID',
   CATEGORY_ID: 'CATEGORY_ID',
   HIDDEN: 'HIDDEN',

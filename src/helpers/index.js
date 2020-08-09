@@ -1,4 +1,4 @@
-export const getPropKeyName = (id) => `p${id}`
+export const getColumnKeyName = (id) => `p${id}`
 export const getCategoryKeyName = (id) => `c${id}`
 
 export const assignWithEmptyShema = (byKey) => ({
@@ -27,7 +27,7 @@ export function createCounter(start) {
   }
 }
 
-export const getPropDefaultValue = (defaultValue, payload = 'payload') =>
-   typeof (defaultValue) === 'function' ?
-      defaultValue(payload) : defaultValue
+export const getColumnDefaultValue = (defaultValue) =>
+  typeof (defaultValue) === 'function' ? defaultValue() : defaultValue
+
 

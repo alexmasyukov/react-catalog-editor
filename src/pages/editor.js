@@ -4,11 +4,13 @@ import { ColumnsProvider } from "components/ColumnsContext"
 import { HandlersProvider } from "components/HandersContext"
 import {
   assignWithEmptyShema,
-  getCategoryKeyName, getPropDefaultValue,
-  getPropKeyName, itemMove
+  getCategoryKeyName,
+  getColumnDefaultValue,
+  getColumnKeyName,
+  itemMove
 } from "helpers"
 import styles from './editor.module.sass'
-import { PROP_TYPES } from "constants/common"
+import { COLUMN_TYPES } from "constants/common"
 
 
 // const normalizeValuesByProperties = (properties) => (products) =>
@@ -33,7 +35,7 @@ const normalizeValuesByKeys = (keys, values) =>
    }), {})
 
 
-const normalize = (getKeyName = (id) => getPropKeyName(id)) => (array) => {
+const normalize = (getKeyName = (id) => getColumnKeyName(id)) => (array) => {
   const byKey = array.reduce((res, item) => {
     return {
       ...res,
@@ -43,25 +45,30 @@ const normalize = (getKeyName = (id) => getPropKeyName(id)) => (array) => {
   return assignWithEmptyShema(byKey)
 }
 
-const getKeyByPropType = (propType, properties) =>
-   properties.keys.filter(key => properties.byKey[key].type === propType)
+const getKeyByColumnType = (columnType, columns) =>
+   columns.keys.filter(key => columns.byKey[key].type === columnType)
 
 
 const initialData = {
-  products: [],
+  helpers: {
+    categoryIdMaker: () => 0,
+    rowIdMaker: () => 0
+  },
   columns: [],
-  categories: []
+  categories: [],
+  rows: []
 }
 
 const Editor = ({ data = initialData, onChange }) => {
-  const [columns, setColumns] = useState(normalize(getPropKeyName)(data.columns))
-  const [categories, setCategories] = useState(normalize(getCategoryKeyName)(data.categories))
+  const [columns, setColumns] = useState(normalize(getColumnKeyName)(data.columns))
+  const [categories, setCategories] = useState(data.categories) //normalize(getCategoryKeyName)(
   const [rows, setRows] = useState(
      data.rows.map(row => normalizeValuesByKeys(columns.keys, row))
   )
+  const { helpers } = data
 
-  columns.idKey =  getKeyByPropType(PROP_TYPES.ID, columns)
-  columns.cidKey = getKeyByPropType(PROP_TYPES.CATEGORY_ID, columns)
+  columns.idKey = getKeyByColumnType(COLUMN_TYPES.ID, columns)
+  columns.cidKey = getKeyByColumnType(COLUMN_TYPES.CATEGORY_ID, columns)
 
   const getRowsByCategoryId = (cid) =>
      rows.filter(row => row[columns.cidKey] === cid)
@@ -69,8 +76,21 @@ const Editor = ({ data = initialData, onChange }) => {
   const handleClickAddProduct = (cid) => () => {
     console.log('handleClickAddProduct', cid)
     const newRow = columns.keys.reduce((res, key) => {
-      const prop = columns.byKey[key]
-      const defaultValue = getPropDefaultValue(prop.default, cid)
+      const column = columns.byKey[key]
+      let defaultValue = ''
+
+      switch (column.type) {
+        case COLUMN_TYPES.ID:
+          defaultValue = helpers.rowIdMaker()
+          break
+
+        case COLUMN_TYPES.CATEGORY_ID:
+          defaultValue = cid
+          break
+
+        default:
+          defaultValue = getColumnDefaultValue(column.default)
+      }
 
       return {
         ...res,
@@ -104,10 +124,10 @@ const Editor = ({ data = initialData, onChange }) => {
       setRows(rows.filter((row, currentIdx) => currentIdx !== idx))
   }
 
-  const handleCellOnChange = (rowId, colKey, propType) => ({ target }) => {
-    const value = propType === PROP_TYPES.CHECK ? target.checked : target.value
-
+  const handleCellOnChange = (rowId, colKey, columnType) => ({ target }) => {
+    const value = columnType === COLUMN_TYPES.CHECK ? target.checked : target.value
     console.log('handleCellOnChange', rowId, colKey, value)
+
     const update = rows.map(row => {
       const id = row[columns.idKey]
       if (id !== rowId) return row
@@ -118,8 +138,23 @@ const Editor = ({ data = initialData, onChange }) => {
       }
     })
 
-    // console.log(update)
     setRows(update)
+  }
+
+  const handleClickAddChildCategory = (cid) => () => {
+    console.log('handleClickAddChildCategory', cid)
+    const newCategory = {
+      id: helpers.categoryIdMaker(),
+      title: 'Новая'
+    }
+
+    const idx = categories.findIndex(({ id }) => id === cid)
+
+    setCategories([
+      ...categories.slice(0, idx + 1),
+      newCategory,
+      ...categories.slice(idx + 1)
+    ])
   }
 
 
@@ -131,9 +166,10 @@ const Editor = ({ data = initialData, onChange }) => {
            onRowMoveDown: handleRowMoveDown,
            onRowMoveUp: handleRowMoveUp,
            onRowRemove: handleRowRemove,
-           onClickAddProduct: handleClickAddProduct
+           onClickAddProduct: handleClickAddProduct,
+           onClickAddChildCategory: handleClickAddChildCategory
          }}>
-           {categories.values.map(category => (
+           {categories.map(category => (
               <Category
                  key={category.id}
                  rows={getRowsByCategoryId(category.id)}

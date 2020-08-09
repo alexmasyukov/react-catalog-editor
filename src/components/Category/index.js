@@ -7,8 +7,8 @@ import styles from "pages/editor.module.sass"
 import { HandlersContext } from "components/HandersContext"
 
 
-const AddRowButton = ({ onClick }) => (
-   <div className={styles.btn} onClick={onClick}>+ Добавить товар</div>
+const AddButton = ({ onClick, text = '' }) => (
+   <div className={styles.btn} onClick={onClick}>{text}</div>
 )
 
 const Category = ({
@@ -19,6 +19,20 @@ const Category = ({
   const handlers = useContext(HandlersContext)
   const columns = useContext(ColumnsContext)
 
+  const addRowButton = (
+     <AddButton
+        text="+ Добавить товар"
+        onClick={handlers.onClickAddProduct(id)}
+     />
+  )
+
+  const addChildCategoryButton = (
+     <AddButton
+        text="+ Добавить подкатегорию"
+        onClick={handlers.onClickAddChildCategory(id)}
+     />
+  )
+
   return (
      <div
         key={id}
@@ -28,7 +42,10 @@ const Category = ({
          <div className={styles.title}>{title}</div>
          <div className={styles.btns}>
            {!rows.length && (
-              <AddRowButton onClick={handlers.onClickAddProduct(id)}/>
+              <>
+                {addRowButton}
+                {addChildCategoryButton}
+              </>
            )}
            <div className={styles.btn}>Вверх</div>
            <div className={styles.btn}>Вниз</div>
@@ -54,11 +71,12 @@ const Category = ({
               ))}
               </tbody>
             </table>
-            <AddRowButton onClick={handlers.onClickAddProduct(id)}/>
+            {addChildCategoryButton}
+            {addRowButton}
           </>
        )}
      </div>
   )
 }
 
-export default Category
+export default React.memo(Category)
