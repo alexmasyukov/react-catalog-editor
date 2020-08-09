@@ -2,6 +2,7 @@ import React from 'react'
 import { AiOutlineArrowUp, AiOutlineArrowDown } from "react-icons/ai"
 import CellDeleteButton from "components/CellDeleteButton"
 import styles from 'pages/editor.module.sass'
+import cn from "classnames"
 
 const CellMoveButtons = ({
                            upVisible = true,
@@ -12,16 +13,14 @@ const CellMoveButtons = ({
                          }) => {
   return (
      <div className={styles.cellButtons}>
-       {upVisible ? (
-          <AiOutlineArrowUp onClick={onRowMoveUp}/>
-       ) : (
-          <AiOutlineArrowUp className={styles.empty}/>
-       )}
-       {downVisible ? (
-          <AiOutlineArrowDown onClick={onRowMoveDown}/>
-       ) : (
-          <AiOutlineArrowDown className={styles.empty}/>
-       )}
+       <AiOutlineArrowUp
+          onClick={onRowMoveUp}
+          className={cn(!upVisible && styles.empty)}
+       />
+       <AiOutlineArrowDown
+          onClick={onRowMoveDown}
+          className={cn(!downVisible && styles.empty)}
+       />
        <CellDeleteButton onRowRemove={onRowRemove}/>
      </div>
   )

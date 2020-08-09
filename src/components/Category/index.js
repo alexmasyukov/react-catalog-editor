@@ -4,9 +4,9 @@ import ColumnHeaders from "components/ColumnHeaders"
 import Row from "components/Row"
 import { ColumnsContext } from "components/ColumnsContext"
 import { HandlersContext } from "components/HandersContext"
-import styles from "pages/editor.module.sass"
 import CategoryTitle from "components/CategoryTitle"
 import Btn from "components/Btn"
+import styles from "pages/editor.module.sass"
 
 
 const Category = ({
@@ -14,6 +14,9 @@ const Category = ({
                     path = '',
                     id,
                     pid,
+                    idx,
+                    visibleMoveUp = true,
+                    visibleMoveDown = true,
                     rows = []
                   }) => {
   const handlers = useContext(HandlersContext)
@@ -21,14 +24,14 @@ const Category = ({
 
   const addRowButton = (
      <Btn
-        title="+ Добавить товар"
+        title="+ Товар"
         onClick={handlers.onClickAddProduct(id)}
      />
   )
 
   const addChildCategoryButton = (
      <Btn
-        title="+ Добавить подкатегорию"
+        title="+ Подкатегория"
         onClick={handlers.onClickAddChildCategory(id)}
      />
   )
@@ -49,12 +52,21 @@ const Category = ({
          <div className={styles.btns}>
            {!rows.length && <>
              {addRowButton}
+             {' | '}
              {addChildCategoryButton}
+             {' | '}
            </>}
-           <Btn title="Вверх" onClick={() => {
-           }}/>
-           <Btn title="Вниз" onClick={() => {
-           }}/>
+           <Btn
+              title="Вверх"
+              onClick={handlers.onCategoryMoveUp(idx)}
+              className={cn(!visibleMoveUp && styles.empty)}
+           />
+           {' | '}
+           <Btn
+              title="Вниз"
+              onClick={handlers.onCategoryMoveDown(idx)}
+              className={cn(!visibleMoveDown && styles.empty)}
+           />
          </div>
        </div>
 
@@ -75,10 +87,15 @@ const Category = ({
                     values={row}
                  />
               ))}
+              <tr>
+                <td colSpan={999} className={styles.btns}>
+                  {addRowButton}
+                  {' | '}
+                  {addChildCategoryButton}
+                </td>
+              </tr>
               </tbody>
             </table>
-            {addChildCategoryButton}
-            {addRowButton}
           </>
        )}
      </div>

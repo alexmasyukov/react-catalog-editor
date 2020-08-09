@@ -196,6 +196,24 @@ const Editor = ({ data = initialData, onChange }) => {
     setCategories(setCategoriesPaths(updateCategories))
   }
 
+  const handleCategoryMoveDown = (idx) => () => {
+    // const findIndex = categories.findIndex(({id: requiredId}) => requiredId === id)
+    if (idx === categories.length - 1) return false
+
+    setCategories(itemMove(categories, idx, idx + 1))
+  }
+
+  const handleCategoryMoveUp = (idx) => () => {
+    // const findIndex = categories.findIndex(({id: requiredId}) => requiredId === id)
+    if (idx === 0) return false
+
+    setCategories(itemMove(categories, idx, idx - 1))
+  }
+
+  const handleCategoryDelete = (id) => () => {
+
+  }
+
 
   return (
      <div className={styles.catalog}>
@@ -206,13 +224,19 @@ const Editor = ({ data = initialData, onChange }) => {
              onRowMoveDown: handleRowMoveDown,
              onRowMoveUp: handleRowMoveUp,
              onRowRemove: handleRowRemove,
+             onCategoryMoveDown: handleCategoryMoveDown,
+             onCategoryMoveUp: handleCategoryMoveUp,
+             onCategoryDelete: handleCategoryDelete,
              onClickAddProduct: handleClickAddProduct,
              onClickAddChildCategory: handleClickAddChildCategory,
              onChangeCategory: handleChangeCategory
            }}>
-             {categories.map(category => (
+             {categories.map((category, idx) => (
                 <Category
                    key={category.id}
+                   idx={idx}
+                   visibleMoveUp={idx > 0}
+                   visibleMoveDown={idx < categories.length - 1}
                    rows={getRowsByCategoryId(category.id)}
                    {...category}
                 />
