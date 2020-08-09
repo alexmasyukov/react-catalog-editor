@@ -1,24 +1,50 @@
 import React, { useContext } from 'react'
-import { PropertiesContext } from "components/PropertiesContext"
-import DynamicControl from "components/DynamicControl"
+import { ColumnsContext } from "components/ColumnsContext"
+import Cell from "components/Cell"
+import CellMoveButtons from "components/CellMoveButtons"
+import { getColumnDefaultValue } from "helpers"
 
-const Row = ({ id, cid, values }) => {
-  const properties = useContext(PropertiesContext)
+const Row = ({
+               id,
+               values,
+               onRowMoveDown,
+               onRowMoveUp,
+               onRowRemove,
+               upVisible,
+               downVisible
+             }) => {
+  const columns = useContext(ColumnsContext)
 
   return (
      <tr>
-       {Object.entries(values).map(([propKey, value]) => {
-         const property = properties.byKey[propKey]
-         const { style } = property
+       {Object.keys(values).map((colKey) => {
+         const column = columns.byKey[colKey]
+         const value = values[colKey]
+
+         if (column.hidden) return null
 
          return (
-            <td key={propKey} style={style}>
-              <DynamicControl propKey={propKey} value={value} property={property}/>
-            </td>
+            <Cell
+               key={id + colKey}
+               column={column}
+               rowId={id}
+               colKey={colKey}
+               value={value === undefined ?
+                  getColumnDefaultValue(column.default) : value}
+            />
          )
        })}
+       <td>
+         <CellMoveButtons
+            upVisible={upVisible}
+            downVisible={downVisible}
+            onRowMoveDown={onRowMoveDown}
+            onRowMoveUp={onRowMoveUp}
+            onRowRemove={onRowRemove}
+         />
+       </td>
      </tr>
   )
 }
 
-export default Row
+export default React.memo(Row)
