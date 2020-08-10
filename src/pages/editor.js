@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useReducer, useState } from 'react'
 import Category from "components/Category"
 import { ColumnsProvider } from "components/ColumnsContext"
 import { HandlersProvider } from "components/HandersContext"
@@ -8,10 +8,12 @@ import {
   getCategoryPath,
   getColumnDefaultValue,
   getColumnKeyName,
-  itemMove
+  itemMove, setCategoriesPaths
 } from "helpers"
 import styles from './editor.module.sass'
 import { COLUMN_TYPES } from "constants/common"
+import reducer from "store/reducer"
+import { ACTION_TYPES } from "store/actionTypes"
 
 
 // const normalizeValuesByProperties = (properties) => (products) =>
@@ -29,11 +31,14 @@ import { COLUMN_TYPES } from "constants/common"
 //      }
 //    })
 
-const normalizeValuesByKeys = (keys, values) =>
-   keys.reduce((res, key, i) => ({
-     ...res,
-     [key]: values[i]
-   }), {})
+const normalizeRowValuesByKeys = (rows, keys) => {
+  return rows.map(row =>
+     keys.reduce((res, key, i) => ({
+       ...res,
+       [key]: row[i]
+     }), {})
+  )
+}
 
 
 const normalize = (getKeyName = (id) => getColumnKeyName(id)) => (array) => {
@@ -50,7 +55,7 @@ const getKeyByColumnType = (columnType, columns) =>
    columns.keys.filter(key => columns.byKey[key].type === columnType)
 
 
-const initialData = {
+const initialState = {
   helpers: {
     categoryIdMaker: () => 0,
     rowIdMaker: () => 0
@@ -60,160 +65,116 @@ const initialData = {
   rows: []
 }
 
-const setCategoriesPaths = (categories) => {
-  const getPath = (id) => getCategoryPath(id, categories)
 
-  return categories.map(category => ({
-    ...category,
-    path: getPath(category.id)
-  }))
+const prepareData = (data) => {
+  const columns = normalize(getColumnKeyName)(data.columns)
+  columns.idKey = getKeyByColumnType(COLUMN_TYPES.ID, columns)
+  columns.cidKey = getKeyByColumnType(COLUMN_TYPES.CATEGORY_ID, columns)
+
+  return {
+    ...data,
+    columns,
+    categories: setCategoriesPaths(data.categories),
+    rows: normalizeRowValuesByKeys(data.rows, columns.keys)
+  }
 }
 
 
-const Editor = ({ data = initialData, onChange }) => {
-  const [columns, setColumns] = useState(
-     normalize(getColumnKeyName)(data.columns)
-  )
-  const [categories, setCategories] = useState(
-     setCategoriesPaths(data.categories)
-  )
-  const [rows, setRows] = useState(
-     data.rows.map(row => normalizeValuesByKeys(columns.keys, row))
-  )
-  const { helpers } = data
+const Editor = ({ data = initialState, onChange }) => {
+  const [state, dispatch] = useReducer(reducer, prepareData(data))
+  const { columns, rows, categories, helpers } = state
 
-  // todo: БЛЯТЬ !!! Мутация, двойной рендер!!!!
-  columns.idKey = getKeyByColumnType(COLUMN_TYPES.ID, columns)
-  columns.cidKey = getKeyByColumnType(COLUMN_TYPES.CATEGORY_ID, columns)
   console.warn('Editor render')
 
 
-  const getRowsByCategoryId = (cid) =>
-     rows.filter(row => row[columns.cidKey] === cid)
+  const handleAddRow = (cid) => () =>
+     dispatch({
+       type: ACTION_TYPES.ADD_ROW,
+       cid
+     })
 
 
-  const handleClickAddProduct = (cid) => () => {
-    console.log('handleClickAddProduct', cid)
-    const newRow = columns.keys.reduce((res, key) => {
-      const column = columns.byKey[key]
-      let defaultValue = ''
+  const handleRowMoveDown = (cid, id) => () => {
+    console.log('handleRowMoveDown', id)
 
-      switch (column.type) {
-        case COLUMN_TYPES.ID:
-          defaultValue = helpers.rowIdMaker()
-          break
-
-        case COLUMN_TYPES.CATEGORY_ID:
-          defaultValue = cid
-          break
-
-        default:
-          defaultValue = getColumnDefaultValue(column.default)
-      }
-
-      return {
-        ...res,
-        [key]: defaultValue
-      }
-    }, {})
-
-    setRows([...rows, newRow])
+    const idx = rows.findIndex(row => row[columns.idKey] === id)
+    if (idx === rows.length - 1) return false
+    // setRows(itemMove(rows, idx, idx + 1))
   }
 
 
-  const handleRowMoveDown = (idx) => () => {
-    console.log('handleRowMoveDown', idx)
+  const handleRowMoveUp = (id) => () => {
+    console.log('handleRowMoveUp', id)
 
-    const update = itemMove(rows, idx, idx + 1)
-    setRows(update)
+    const idx = rows.findIndex(row => row[columns.idKey] === id)
+    console.log('idx', idx, rows)
+    if (idx === 0) return false
+    // setRows(itemMove(rows, idx, idx - 1))
   }
 
 
-  const handleRowMoveUp = (idx) => () => {
-    console.log('handleRowMoveUp', idx)
-
-    const update = itemMove(rows, idx, idx - 1)
-    setRows(update)
-  }
-
-
-  const handleRowRemove = (idx) => () => {
-    console.log('handleRowRemove', idx)
-
+  const handleRowRemove = (id) => () => {
     const question = window.confirm('Удалить?')
-    if (question)
-      setRows(rows.filter((row, currentIdx) => currentIdx !== idx))
+    if (question) {
+      dispatch({
+        type: ACTION_TYPES.DELETE_ROW,
+        id
+      })
+    }
   }
 
 
   const handleCellOnChange = (rowId, colKey, columnType) => ({ target }) => {
     const value = columnType === COLUMN_TYPES.CHECK ? target.checked : target.value
-    console.log('handleCellOnChange', rowId, colKey, value)
-
-    const update = rows.map(row => {
-      const id = row[columns.idKey]
-      if (id !== rowId) return row
-
-      return {
-        ...row,
-        [colKey]: value
-      }
+    dispatch({
+      type: ACTION_TYPES.CHANGE_CELL,
+      rowId,
+      colKey,
+      value
     })
-
-    setRows(update)
   }
 
 
-  const handleClickAddChildCategory = (id) => () => {
-    console.log('handleClickAddChildCategory', id)
-    const newCategory = {
-      id: helpers.categoryIdMaker(),
-      pid: id,
-      title: 'Новая'
-    }
-
-    const idx = categories.findIndex(category => category.id === id)
-    const updatedCategories = [
-      ...categories.slice(0, idx + 1),
-      newCategory,
-      ...categories.slice(idx + 1)
-    ]
-
-    setCategories(setCategoriesPaths(updatedCategories))
-  }
+  const handleAddChildCategory = (id) => () =>
+     dispatch({
+       type: ACTION_TYPES.ADD_CHILD_CATEGORY,
+       id
+     })
 
 
-  const handleChangeCategory = (updateCategory) => {
-    console.log('handleChangeCategory', updateCategory)
+  const handleChangeCategory = (category) =>
+     dispatch({
+       type: ACTION_TYPES.CHANGE_CATEGORY,
+       category
+     })
 
-    const updateCategories = categories.map(category =>
-       category.id === updateCategory.id ? {
-         ...category,
-         ...updateCategory
-       } : category
-    )
-
-    setCategories(setCategoriesPaths(updateCategories))
-  }
 
   const handleCategoryMoveDown = (idx) => () => {
-    // const findIndex = categories.findIndex(({id: requiredId}) => requiredId === id)
     if (idx === categories.length - 1) return false
 
-    setCategories(itemMove(categories, idx, idx + 1))
+    dispatch({
+      type: ACTION_TYPES.MOVE_DOWN_CATEGORY,
+      idx
+    })
   }
 
   const handleCategoryMoveUp = (idx) => () => {
-    // const findIndex = categories.findIndex(({id: requiredId}) => requiredId === id)
     if (idx === 0) return false
 
-    setCategories(itemMove(categories, idx, idx - 1))
+    dispatch({
+      type: ACTION_TYPES.MOVE_UP_CATEGORY,
+      idx
+    })
   }
+
 
   const handleCategoryDelete = (id) => () => {
 
   }
 
+
+  const getRowsByCategoryId = (cid) =>
+     rows.filter(row => row[columns.cidKey] === cid)
 
   return (
      <div className={styles.catalog}>
@@ -224,11 +185,11 @@ const Editor = ({ data = initialData, onChange }) => {
              onRowMoveDown: handleRowMoveDown,
              onRowMoveUp: handleRowMoveUp,
              onRowRemove: handleRowRemove,
+             onAddRow: handleAddRow,
              onCategoryMoveDown: handleCategoryMoveDown,
              onCategoryMoveUp: handleCategoryMoveUp,
              onCategoryDelete: handleCategoryDelete,
-             onClickAddProduct: handleClickAddProduct,
-             onClickAddChildCategory: handleClickAddChildCategory,
+             onAddChildCategory: handleAddChildCategory,
              onChangeCategory: handleChangeCategory
            }}>
              {categories.map((category, idx) => (

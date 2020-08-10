@@ -25,14 +25,14 @@ const Category = ({
   const addRowButton = (
      <Btn
         title="+ Товар"
-        onClick={handlers.onClickAddProduct(id)}
+        onClick={handlers.onAddRow(id)}
      />
   )
 
   const addChildCategoryButton = (
      <Btn
         title="+ Подкатегория"
-        onClick={handlers.onClickAddChildCategory(id)}
+        onClick={handlers.onAddChildCategory(id)}
      />
   )
 
@@ -75,18 +75,21 @@ const Category = ({
             <table className={styles.products}>
               <tbody>
               <ColumnHeaders/>
-              {rows.map((row, idx) => (
-                 <Row
-                    key={idx}
-                    id={row[columns.idKey]}
-                    onRowMoveDown={handlers.onRowMoveDown(idx)}
-                    onRowMoveUp={handlers.onRowMoveUp(idx)}
-                    onRowRemove={handlers.onRowRemove(idx)}
-                    upVisible={idx > 0}
-                    downVisible={idx < rows.length - 1}
-                    values={row}
-                 />
-              ))}
+              {rows.map((row, idx) => {
+                const id = row[columns.idKey]
+                return (
+                   <Row
+                      key={idx}
+                      id={id}
+                      onRowMoveDown={handlers.onRowMoveDown(id)}
+                      onRowMoveUp={handlers.onRowMoveUp(id)}
+                      onRowRemove={handlers.onRowRemove(id)}
+                      upVisible={idx > 0}
+                      downVisible={idx < rows.length - 1}
+                      values={row}
+                   />
+                )
+              })}
               <tr>
                 <td colSpan={999} className={styles.btns}>
                   {addRowButton}

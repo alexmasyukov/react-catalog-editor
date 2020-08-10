@@ -43,3 +43,11 @@ export const getCategoryPath = (id, categories = [], init = []) => {
      [category.title, ...init].join('/')
 }
 
+export const setCategoriesPaths = (categories) => {
+  const getPath = (id) => getCategoryPath(id, categories)
+
+  return categories.map(category => ({
+    ...category,
+    path: getPath(category.id)
+  }))
+}
