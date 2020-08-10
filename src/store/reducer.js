@@ -1,7 +1,8 @@
 import { ACTION_TYPES } from "store/actionTypes"
 import {
+  withNewCategory,
   withNewChildCategory,
-  withNewRow,
+  withNewRow, withoutCategory,
   withUpdatedCategory
 } from "store/childReducers"
 import { itemMove } from "helpers"
@@ -57,6 +58,21 @@ const reducer = (state, action) => {
       return {
         ...state,
         categories: itemMove(state.categories, action.idx, action.idx + 1)
+      }
+
+
+    case ACTION_TYPES.DELETE_CATEGORY:
+      const { categories, rows } = withoutCategory(action.id, state)
+      return {
+        ...state,
+        categories,
+        rows
+      }
+
+    case ACTION_TYPES.ADD_CATEGORY:
+      return {
+        ...state,
+        categories: withNewCategory(state)
       }
 
 

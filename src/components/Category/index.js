@@ -22,19 +22,26 @@ const Category = ({
   const handlers = useContext(HandlersContext)
   const columns = useContext(ColumnsContext)
 
-  const addRowButton = (
+  const addRowButton =
      <Btn
         title="+ Товар"
         onClick={handlers.onAddRow(id)}
      />
-  )
 
-  const addChildCategoryButton = (
+
+  const addChildCategoryButton =
      <Btn
         title="+ Подкатегория"
         onClick={handlers.onAddChildCategory(id)}
      />
-  )
+
+
+  const deleteCategoryButton =
+     <Btn
+        title="Удалить"
+        onClick={handlers.onCategoryDelete(id)}
+     />
+
 
   return (
      <div
@@ -56,6 +63,8 @@ const Category = ({
              {addChildCategoryButton}
              {' | '}
            </>}
+           {deleteCategoryButton}
+           {' | '}
            <Btn
               title="Вверх"
               onClick={handlers.onCategoryMoveUp(idx)}

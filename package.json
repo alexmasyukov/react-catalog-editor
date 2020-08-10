@@ -1,6 +1,17 @@
 {
   "name": "react-catalog-editor",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "description": "Editable catalog products in table view with categories.",
+  "author": "Alexey Masyukov",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexmasyukov/react-catalog-editor"
+  },
+  "bugs": {
+    "url": "https://github.com/alexmasyukov/react-catalog-editor/issues"
+  },
+  "homepage": "https://github.com/alexmasyukov/react-catalog-editor#readme",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",

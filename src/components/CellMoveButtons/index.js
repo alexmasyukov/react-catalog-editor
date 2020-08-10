@@ -13,14 +13,14 @@ const CellMoveButtons = ({
                          }) => {
   return (
      <div className={styles.cellButtons}>
-       <AiOutlineArrowUp
-          onClick={onRowMoveUp}
-          className={cn(!upVisible && styles.empty)}
-       />
-       <AiOutlineArrowDown
-          onClick={onRowMoveDown}
-          className={cn(!downVisible && styles.empty)}
-       />
+       {/*<AiOutlineArrowUp*/}
+          {/*onClick={onRowMoveUp}*/}
+          {/*className={cn(!upVisible && styles.empty)}*/}
+       {/*/>*/}
+       {/*<AiOutlineArrowDown*/}
+          {/*onClick={onRowMoveDown}*/}
+          {/*className={cn(!downVisible && styles.empty)}*/}
+       {/*/>*/}
        <CellDeleteButton onRowRemove={onRowRemove}/>
      </div>
   )

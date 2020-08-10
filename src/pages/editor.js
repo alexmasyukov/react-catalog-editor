@@ -14,6 +14,7 @@ import styles from './editor.module.sass'
 import { COLUMN_TYPES } from "constants/common"
 import reducer from "store/reducer"
 import { ACTION_TYPES } from "store/actionTypes"
+import Btn from "components/Btn"
 
 
 // const normalizeValuesByProperties = (properties) => (products) =>
@@ -114,7 +115,7 @@ const Editor = ({ data = initialState, onChange }) => {
 
 
   const handleRowRemove = (id) => () => {
-    const question = window.confirm('Удалить?')
+    const question = window.confirm('Удалить товар?')
     if (question) {
       dispatch({
         type: ACTION_TYPES.DELETE_ROW,
@@ -169,12 +170,28 @@ const Editor = ({ data = initialState, onChange }) => {
 
 
   const handleCategoryDelete = (id) => () => {
-
+    const question = window.confirm('Удалить категорию?')
+    if (question) {
+      const questionRows = window.confirm('Все товары категории тоже ' +
+         'будет удалены. Продолжить?')
+      if (questionRows) {
+        dispatch({
+          type: ACTION_TYPES.DELETE_CATEGORY,
+          id
+        })
+      }
+    }
   }
+
+  const handleAddCategory = () =>
+     dispatch({
+       type: ACTION_TYPES.ADD_CATEGORY
+     })
 
 
   const getRowsByCategoryId = (cid) =>
      rows.filter(row => row[columns.cidKey] === cid)
+
 
   return (
      <div className={styles.catalog}>
@@ -202,6 +219,11 @@ const Editor = ({ data = initialState, onChange }) => {
                    {...category}
                 />
              ))}
+             <Btn
+                title="+ Добавить категорию"
+                className={styles.btnNewCategory}
+                onClick={handleAddCategory}
+             />
            </HandlersProvider>
          </ColumnsProvider>
        </CategoriesProvider>
