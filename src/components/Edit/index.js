@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { INPUT_TYPES } from "constants/common"
-import styles from "pages/editor.module.sass"
+import styles from 'components/Editor/editor.module.sass'
 
 const Edit = ({
                 initialValue,

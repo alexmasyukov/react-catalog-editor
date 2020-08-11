@@ -1,5 +1,6 @@
 import { ACTION_TYPES } from "store/actionTypes"
 import {
+  withMovedImageInRow,
   withNewCategory,
   withNewChildCategory,
   withNewRow, withoutCategory,
@@ -73,6 +74,18 @@ const reducer = (state, action) => {
       return {
         ...state,
         categories: withNewCategory(state)
+      }
+
+    case ACTION_TYPES.MOVE_IMAGE:
+      itemMove(state.categories, action.idx, action.idx + 1)
+      return {
+        ...state,
+        rows: withMovedImageInRow(
+           action.rowId,
+           action.colKey,
+           action.imageIdx,
+           state
+        )
       }
 
 

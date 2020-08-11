@@ -1,5 +1,5 @@
 import { COLUMN_TYPES } from "constants/common"
-import { getColumnDefaultValue, setCategoriesPaths } from "helpers"
+import { getColumnDefaultValue, itemMove, setCategoriesPaths } from "helpers"
 
 const getNewCategory = (id) => ({
   id,
@@ -70,6 +70,21 @@ export const withUpdatedCategory = (updatedCategory, { categories }) => {
   return setCategoriesPaths(updated)
 }
 
+export const withMovedImageInRow = (rowId, colKey, imageIdx, { rows, columns }) => {
+  return rows.map(row => {
+    const idKey = columns.idKey
+
+    if (row[idKey] === rowId) {
+      const images = row[colKey]
+      return {
+        ...row,
+        [colKey]: itemMove(images, imageIdx, imageIdx - 1)
+      }
+    }
+
+    return row
+  })
+}
 
 export const withoutCategory = (id, { categories, rows, columns }) => {
   const { cidKey } = columns

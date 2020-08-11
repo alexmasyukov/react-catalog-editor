@@ -1,36 +1,19 @@
-import React, { useReducer, useState } from 'react'
+import React, { useReducer } from 'react'
 import Category from "components/Category"
+import Btn from "components/Btn"
 import { ColumnsProvider } from "components/ColumnsContext"
 import { HandlersProvider } from "components/HandersContext"
 import { CategoriesProvider } from "components/CategoriesContext"
+import { COLUMN_TYPES } from "constants/common"
+import { ACTION_TYPES } from "store/actionTypes"
+import reducer from "store/reducer"
 import {
   assignWithEmptyShema,
-  getCategoryPath,
-  getColumnDefaultValue,
   getColumnKeyName,
-  itemMove, setCategoriesPaths
+  setCategoriesPaths
 } from "helpers"
-import styles from './editor.module.sass'
-import { COLUMN_TYPES } from "constants/common"
-import reducer from "store/reducer"
-import { ACTION_TYPES } from "store/actionTypes"
-import Btn from "components/Btn"
+import styles from 'components/Editor/editor.module.sass'
 
-
-// const normalizeValuesByProperties = (properties) => (products) =>
-//    products.map(product => {
-//      const values = properties.keys.reduce((res, key, i) => {
-//        return {
-//          ...res,
-//          [key]: product.values[i]
-//        }
-//      }, {})
-//
-//      return {
-//        ...product,
-//        values
-//      }
-//    })
 
 const normalizeRowValuesByKeys = (rows, keys) => {
   return rows.map(row =>
@@ -52,6 +35,23 @@ const normalize = (getKeyName = (id) => getColumnKeyName(id)) => (array) => {
   return assignWithEmptyShema(byKey)
 }
 
+
+const setDefaultValues = (rows, columns) => {
+  return rows.map(row =>
+     columns.keys.reduce((preparedRow, colKey) => {
+       const value = row[colKey]
+       const column = columns.byKey[colKey]
+       const columnDefaulValue = 'default' in column ? column.default : undefined
+
+       return {
+         ...preparedRow,
+         [colKey]: value ? value : columnDefaulValue
+       }
+     }, {})
+  )
+}
+
+
 const getKeyByColumnType = (columnType, columns) =>
    columns.keys.filter(key => columns.byKey[key].type === columnType)
 
@@ -59,7 +59,8 @@ const getKeyByColumnType = (columnType, columns) =>
 const initialState = {
   helpers: {
     categoryIdMaker: () => 0,
-    rowIdMaker: () => 0
+    rowIdMaker: () => 0,
+    getImage: (img) => img
   },
   columns: [],
   categories: [],
@@ -76,7 +77,9 @@ const prepareData = (data) => {
     ...data,
     columns,
     categories: setCategoriesPaths(data.categories),
-    rows: normalizeRowValuesByKeys(data.rows, columns.keys)
+    rows: setDefaultValues(
+       normalizeRowValuesByKeys(data.rows, columns.keys), columns
+    )
   }
 }
 
@@ -84,9 +87,9 @@ const prepareData = (data) => {
 const Editor = ({ data = initialState, onChange }) => {
   const [state, dispatch] = useReducer(reducer, prepareData(data))
   const { columns, rows, categories, helpers } = state
+  onChange(state)
 
   console.warn('Editor render')
-
 
   const handleAddRow = (cid) => () =>
      dispatch({
@@ -125,7 +128,8 @@ const Editor = ({ data = initialState, onChange }) => {
   }
 
 
-  const handleCellOnChange = (rowId, colKey, columnType) => ({ target }) => {
+  const handleCellChange = (rowId, colKey, columnType) => ({ target }) => {
+    console.log('handleCellChange', rowId, colKey, columnType)
     const value = columnType === COLUMN_TYPES.CHECK ? target.checked : target.value
     dispatch({
       type: ACTION_TYPES.CHANGE_CELL,
@@ -189,6 +193,19 @@ const Editor = ({ data = initialState, onChange }) => {
      })
 
 
+  const handleImageMoveLeft = (rowId, colKey, imageIdx) => () => {
+    if (imageIdx > 0) {
+      dispatch({
+        type: ACTION_TYPES.MOVE_IMAGE,
+        rowId,
+        colKey,
+        imageIdx
+      })
+    }
+  }
+
+
+
   const getRowsByCategoryId = (cid) =>
      rows.filter(row => row[columns.cidKey] === cid)
 
@@ -198,7 +215,7 @@ const Editor = ({ data = initialState, onChange }) => {
        <CategoriesProvider value={categories}>
          <ColumnsProvider value={columns}>
            <HandlersProvider value={{
-             onChangeCell: handleCellOnChange,
+             onChangeCell: handleCellChange,
              onRowMoveDown: handleRowMoveDown,
              onRowMoveUp: handleRowMoveUp,
              onRowRemove: handleRowRemove,
@@ -207,7 +224,9 @@ const Editor = ({ data = initialState, onChange }) => {
              onCategoryMoveUp: handleCategoryMoveUp,
              onCategoryDelete: handleCategoryDelete,
              onAddChildCategory: handleAddChildCategory,
-             onChangeCategory: handleChangeCategory
+             onChangeCategory: handleChangeCategory,
+             onImageMoveLeft: handleImageMoveLeft,
+             getImage: helpers.getImage
            }}>
              {categories.map((category, idx) => (
                 <Category

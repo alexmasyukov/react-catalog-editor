@@ -1,9 +1,11 @@
-import React  from 'react'
+import React from 'react'
 import { INPUT_TYPES, COLUMN_TYPES } from "constants/common"
 import Edit from "components/Edit"
+import Images from "components/Images"
 
 
-const DynamicControl = ({ rowId, colKey, isEdit = false, value, column, onChange }) => {
+const DynamicControl = ({ rowId, colKey, isEdit = false, value, column,
+                          onChange, onImageMoveLeft }) => {
   switch (column.type) {
     case COLUMN_TYPES.CHECK:
       return (
@@ -41,6 +43,13 @@ const DynamicControl = ({ rowId, colKey, isEdit = false, value, column, onChange
         />
       }
       return value
+
+    case COLUMN_TYPES.IMAGES:
+      return <Images
+         rowId={rowId}
+         colKey={colKey}
+         items={value}
+      />
 
     default:
       return value

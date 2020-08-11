@@ -1,5 +1,5 @@
-export const getColumnKeyName = (id) => `p${id}`
-export const getCategoryKeyName = (id) => `c${id}`
+export const getColumnKeyName = (id) => `col${id}`
+// export const getCategoryKeyName = (id) => `c${id}`
 
 export const assignWithEmptyShema = (byKey) => ({
   byKey,

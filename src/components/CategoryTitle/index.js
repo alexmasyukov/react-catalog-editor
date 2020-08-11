@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { CategoriesContext } from "components/CategoriesContext"
-import styles from "pages/editor.module.sass"
+import React, { useContext, useState } from 'react'
 import Btn from "components/Btn"
+import { CategoriesContext } from "components/CategoriesContext"
+import styles from 'components/Editor/editor.module.sass'
 
 const ParentCategorySelector = ({
                                   skipCategoryId = 0,
@@ -80,4 +80,4 @@ const CategoryTitle = ({
   )
 }
 
-export default CategoryTitle
+export default React.memo(CategoryTitle)

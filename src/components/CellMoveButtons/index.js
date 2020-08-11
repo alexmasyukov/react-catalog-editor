@@ -1,8 +1,8 @@
 import React from 'react'
+import cn from "classnames"
 import { AiOutlineArrowUp, AiOutlineArrowDown } from "react-icons/ai"
 import CellDeleteButton from "components/CellDeleteButton"
-import styles from 'pages/editor.module.sass'
-import cn from "classnames"
+import styles from 'components/Editor/editor.module.sass'
 
 const CellMoveButtons = ({
                            upVisible = true,
@@ -13,14 +13,14 @@ const CellMoveButtons = ({
                          }) => {
   return (
      <div className={styles.cellButtons}>
-       {/*<AiOutlineArrowUp*/}
-          {/*onClick={onRowMoveUp}*/}
-          {/*className={cn(!upVisible && styles.empty)}*/}
-       {/*/>*/}
-       {/*<AiOutlineArrowDown*/}
-          {/*onClick={onRowMoveDown}*/}
-          {/*className={cn(!downVisible && styles.empty)}*/}
-       {/*/>*/}
+       <AiOutlineArrowUp
+          onClick={onRowMoveUp}
+          className={cn(!upVisible && styles.empty)}
+       />
+       <AiOutlineArrowDown
+          onClick={onRowMoveDown}
+          className={cn(!downVisible && styles.empty)}
+       />
        <CellDeleteButton onRowRemove={onRowRemove}/>
      </div>
   )

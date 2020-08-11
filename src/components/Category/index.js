@@ -6,7 +6,7 @@ import { ColumnsContext } from "components/ColumnsContext"
 import { HandlersContext } from "components/HandersContext"
 import CategoryTitle from "components/CategoryTitle"
 import Btn from "components/Btn"
-import styles from "pages/editor.module.sass"
+import styles from 'components/Editor/editor.module.sass'
 
 
 const Category = ({

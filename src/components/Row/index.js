@@ -2,7 +2,6 @@ import React, { useContext } from 'react'
 import { ColumnsContext } from "components/ColumnsContext"
 import Cell from "components/Cell"
 import CellMoveButtons from "components/CellMoveButtons"
-import { getColumnDefaultValue } from "helpers"
 
 const Row = ({
                id,
@@ -29,8 +28,7 @@ const Row = ({
                column={column}
                rowId={id}
                colKey={colKey}
-               value={value === undefined ?
-                  getColumnDefaultValue(column.default) : value}
+               value={value}
             />
          )
        })}

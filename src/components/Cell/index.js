@@ -3,7 +3,7 @@ import cn from 'classnames'
 import DynamicControl from "components/DynamicControl"
 import { COLUMN_TYPES } from "constants/common"
 import { HandlersContext } from "components/HandersContext"
-import styles from './../../pages/editor.module.sass'
+import styles from 'components/Editor/editor.module.sass'
 
 
 const Cell = ({ column, colKey, rowId, value }) => {
@@ -25,16 +25,26 @@ const Cell = ({ column, colKey, rowId, value }) => {
   }
 
 
-  const cellHandlers = {}
-  if (column.type !== COLUMN_TYPES.CHECK && column.type !== COLUMN_TYPES.LABEL) {
-    cellHandlers.onClick = handleCellClick
+  let cellHandlers = {}
+  switch (column.type) {
+    case COLUMN_TYPES.ID:
+    case COLUMN_TYPES.CATEGORY_ID:
+    case COLUMN_TYPES.LABEL:
+    case COLUMN_TYPES.IMAGES:
+      break
+
+    default:
+      cellHandlers.onClick = handleCellClick
   }
 
   return (
      <td
         key={colKey}
         style={style}
-        className={cn(isEdit && styles.editCell)}
+        className={cn(
+           (isEdit || column.type === COLUMN_TYPES.IMAGES) && styles.editCell,
+           column.type === COLUMN_TYPES.STRING && styles.noWrap
+        )}
         {...cellHandlers}
      >
        <DynamicControl

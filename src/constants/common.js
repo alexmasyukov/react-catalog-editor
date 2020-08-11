@@ -7,6 +7,7 @@ export const COLUMN_TYPES = {
   NUMBER: 'NUMBER',
   LABEL: 'LABEL',
   TEXT: 'TEXT',
+  IMAGES: 'IMAGES'
 }
 
 export const INPUT_TYPES = {

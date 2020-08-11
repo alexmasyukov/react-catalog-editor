@@ -1,12 +1,14 @@
 import React from 'react'
-import Editor from "pages/editor"
+import Editor from "components/Editor"
 import { COLUMN_TYPES } from "constants/common"
 import { createCounter } from "helpers"
+import './app.module.sass'
+
 
 const categories = [
   {
     id: 1,
-    title: 'Гелиевые шары',
+    title: 'Гелиевые шары'
   },
   {
     id: 2,
@@ -43,11 +45,12 @@ const lastCid = Math.max(...categories.map(({ id = 0 }) => id))
 const data = {
   helpers: {
     categoryIdMaker: createCounter(lastCid + 1),
-    rowIdMaker: createCounter(lastRowsId + 1)
+    rowIdMaker: createCounter(lastRowsId + 1),
+    getImage: (img) => `https://xn--80aeff2a2ak7at8e.xn--p1ai/sync/${img}`
   },
   columns: [
     {
-      id: 99,
+      id: 20,
       title: 'ID',
       type: COLUMN_TYPES.ID,
       order: 1
@@ -138,6 +141,16 @@ const data = {
       title: 'Описание',
       type: COLUMN_TYPES.TEXT,
       default: ''
+    },
+    {
+      id: 30,
+      title: 'Фото',
+      type: COLUMN_TYPES.IMAGES,
+      default: [
+        ['small_27_03_2020_09_08_53_779J6zxr.jpg'],
+        ['small_10_03_2020_11_28_42_172NfmB6.jpg'],
+        ['small_17_10_2019_12_55_33_1915J9MC.png']
+      ]
     }
   ],
   categories,
@@ -145,12 +158,8 @@ const data = {
 }
 
 function App() {
-  const handleOnChange = () => {
-    console.log('handleOnChange')
-    // formula(price = 0, sale = 0) {
-    //   return (price / 100) * (100 - sale)
-    // },
-    // }
+  const handleOnChange = (data) => {
+    console.log('handleOnChange', data)
   }
 
   return (
