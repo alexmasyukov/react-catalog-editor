@@ -1,6 +1,8 @@
 import React, { useRef, useState } from 'react'
+import axios from "axios"
 
-const FileInput = ({ children }) => {
+
+const FileInput = ({ children, uploadUrl, onUpload }) => {
   const [loading, setLoading] = useState(false)
   const fileInput = useRef(null)
 
@@ -14,11 +16,26 @@ const FileInput = ({ children }) => {
     event.stopPropagation()
     event.preventDefault()
     setLoading(true)
-    console.log(event.currentTarget.files[0])
 
-    setTimeout(() => {
-      setLoading(false)
-    }, 500)
+    const data = new FormData()
+    data.append('attachments', event.currentTarget.files[0])
+    axios.post(uploadUrl, data)
+       .then(({ status, result }) => {
+         console.log('then', status, result)
+         setLoading(false)
+         if (status === 'done') {
+           onUpload(result)
+         } else {
+           alert('Ошибка при загрузке изображения. Попробуйте другое изображение.')
+           alert(result)
+         }
+       })
+       .catch(err => {
+         console.log(err)
+         setLoading(false)
+         alert('Ошибка при загрузке изображения. Попробуйте другое изображение.')
+         alert(err)
+       })
   }
 
   return (
@@ -31,10 +48,15 @@ const FileInput = ({ children }) => {
           multiple={false}
           onChange={handleOnChange}
        />
-
        {children(loading, handleClick)}
      </div>
   )
 }
+
+// console.log(event.currentTarget.files[0])
+// return axios[type]('', , { //this._uploadImagesBase
+// headers: { 'Content-Type': 'multipart/form-data' },
+// withCredentials: true
+// })
 
 export default FileInput

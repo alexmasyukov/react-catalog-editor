@@ -57,11 +57,11 @@ const getKeyByColumnType = (columnType, columns) =>
 
 
 const initialState = {
-  helpers: {
-    categoryIdMaker: () => 0,
-    rowIdMaker: () => 0,
-    getImage: (img) => img
-  },
+  // helpers: {
+  //   categoryIdMaker: () => 0,
+  //   rowIdMaker: () => 0,
+  //   getImage: (img) => img
+  // },
   columns: [],
   categories: [],
   rows: []
@@ -86,7 +86,7 @@ const prepareData = (data) => {
 
 const Editor = ({ data = initialState, onChange }) => {
   const [state, dispatch] = useReducer(reducer, prepareData(data))
-  const { columns, rows, categories, helpers } = state
+  const { columns, rows, categories } = state
   onChange(state)
 
   console.warn('Editor render')
@@ -204,6 +204,14 @@ const Editor = ({ data = initialState, onChange }) => {
     }
   }
 
+  const onAddImage = (rowId, colKey) => (image) => {
+    dispatch({
+      type: ACTION_TYPES.ADD_IMAGE,
+      rowId,
+      colKey,
+      image
+    })
+  }
 
 
   const getRowsByCategoryId = (cid) =>
@@ -226,7 +234,7 @@ const Editor = ({ data = initialState, onChange }) => {
              onAddChildCategory: handleAddChildCategory,
              onChangeCategory: handleChangeCategory,
              onImageMoveLeft: handleImageMoveLeft,
-             getImage: helpers.getImage
+             onAddImage: onAddImage
            }}>
              {categories.map((category, idx) => (
                 <Category

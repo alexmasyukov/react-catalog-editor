@@ -1,6 +1,5 @@
 import React, { useContext } from 'react'
 import cn from 'classnames'
-import axios from 'axios'
 import { HandlersContext } from "components/HandersContext"
 import {
   AiOutlineArrowLeft,
@@ -11,7 +10,7 @@ import FileInput from "components/FileInput"
 import styles from 'components/Editor/editor.module.sass'
 
 
-const Images = ({ rowId, colKey, items = [] }) => {
+const Images = ({ rowId, colKey, items = [], getImage, uploadImageUrl = '' }) => {
   const handlers = useContext(HandlersContext)
 
   return (
@@ -24,32 +23,21 @@ const Images = ({ rowId, colKey, items = [] }) => {
                className={cn(styles.img, idx > 0 && styles.btnImgMoveLayer)}
                onClick={handlers.onImageMoveLeft(rowId, colKey, idx)}
             >
-              {idx > 0 && <AiOutlineArrowLeft className={styles.btnImageLeft}/>}
+              {idx > 0 && (
+                 <AiOutlineArrowLeft className={styles.btnImageLeft}/>
+              )}
               <img
-                 src={handlers.getImage(smallImg)}
+                 src={getImage(smallImg)}
                  alt=""
               />
-
-
-              {/*<input id="files" type="file" accept="image/*"*/}
-              {/*onChange={(event) => {*/}
-              {/*setIsLoading(true)*/}
-
-              {/*uploadImages(event.currentTarget.files[0])*/}
-              {/*.then(result => {*/}
-              {/*if (Array.isArray(field.value)) {*/}
-              {/*form.setFieldValue(field.name, [...field.value, result.lg[0]])*/}
-              {/*} else {*/}
-              {/*form.setFieldValue(field.name, result.thumb[0])*/}
-              {/*}*/}
-              {/*setIsLoading(false)*/}
-              {/*})*/}
-              {/*}}/>*/}
             </div>
          )
        })}
        <div className={cn(styles.img, styles.btnImgageUpload)}>
-         <FileInput>
+         <FileInput
+            uploadUrl={uploadImageUrl}
+            onUpload={handlers.onAddImage(rowId, colKey)}
+         >
            {(loading, onClick) =>
               loading ? (
                  <AiOutlineLoading className={styles.iconSpin}/>
@@ -63,21 +51,6 @@ const Images = ({ rowId, colKey, items = [] }) => {
 
      </div>
   )
-}
-
-
-const uploadImages = (files) => {
-  const data = new FormData()
-  data.append('attachments', files)
-  return axios.post('', data, { //this._uploadImagesBase
-    headers: { 'Content-Type': 'multipart/form-data' },
-    withCredentials: true
-  })
-     .then(res => res.data.result)
-     .catch(err => {
-       alert('Ошибка при загрузке изображения. Попробуйте другое изображение.')
-       // this._apiErrHandler(err)
-     })
 }
 
 

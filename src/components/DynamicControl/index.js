@@ -5,7 +5,7 @@ import Images from "components/Images"
 
 
 const DynamicControl = ({ rowId, colKey, isEdit = false, value, column,
-                          onChange, onImageMoveLeft }) => {
+                          onChange }) => {
   switch (column.type) {
     case COLUMN_TYPES.CHECK:
       return (
@@ -49,6 +49,8 @@ const DynamicControl = ({ rowId, colKey, isEdit = false, value, column,
          rowId={rowId}
          colKey={colKey}
          items={value}
+         uploadImageUrl={column.uploadImageUrl}
+         getImage={column.getImage}
       />
 
     default:

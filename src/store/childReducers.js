@@ -71,14 +71,30 @@ export const withUpdatedCategory = (updatedCategory, { categories }) => {
 }
 
 export const withMovedImageInRow = (rowId, colKey, imageIdx, { rows, columns }) => {
-  return rows.map(row => {
-    const idKey = columns.idKey
+  const idKey = columns.idKey
 
+  return rows.map(row => {
     if (row[idKey] === rowId) {
       const images = row[colKey]
       return {
         ...row,
         [colKey]: itemMove(images, imageIdx, imageIdx - 1)
+      }
+    }
+
+    return row
+  })
+}
+
+export const withAddImageInRow = (rowId, colKey, image, { rows, columns }) => {
+  const idKey = columns.idKey
+
+  return rows.map(row => {
+    if (row[idKey] === rowId) {
+      const images = row[colKey]
+      return {
+        ...row,
+        [colKey]: [...images, image]
       }
     }
 

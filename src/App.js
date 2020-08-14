@@ -43,22 +43,23 @@ const lastCid = Math.max(...categories.map(({ id = 0 }) => id))
 
 
 const data = {
-  helpers: {
-    categoryIdMaker: createCounter(lastCid + 1),
-    rowIdMaker: createCounter(lastRowsId + 1),
-    getImage: (img) => `https://xn--80aeff2a2ak7at8e.xn--p1ai/sync/${img}`
-  },
+  // helpers: {
+  //   categoryIdMaker:
+  //   rowIdMaker: createCounter(lastRowsId + 1),
+  // },
   columns: [
     {
       id: 20,
       title: 'ID',
       type: COLUMN_TYPES.ID,
+      idMaker: createCounter(lastCid + 1),
       order: 1
     },
     {
       id: 1,
       title: 'CID',
       type: COLUMN_TYPES.CATEGORY_ID,
+      idMaker: createCounter(lastRowsId + 1),
       // hidden: true,
       default: (cid) => cid,
       order: 1
@@ -146,10 +147,11 @@ const data = {
       id: 30,
       title: 'Фото',
       type: COLUMN_TYPES.IMAGES,
+      getImage: (img) => `https://xn--80aeff2a2ak7at8e.xn--p1ai/sync/${img}`,
+      uploadImageUrl: 'https://xn--80aeff2a2ak7at8e.xn--p1ai/cms/pages/db_orders/get_img_test.php',
       default: [
-        ['small_27_03_2020_09_08_53_779J6zxr.jpg'],
-        ['small_10_03_2020_11_28_42_172NfmB6.jpg'],
-        ['small_17_10_2019_12_55_33_1915J9MC.png']
+        ['small_27_03_2020_09_08_53_779J6zxr.jpg', '27_03_2020_09_08_53_779J6zxr.jpg'],
+        ['small_10_03_2020_11_28_42_172NfmB6.jpg', '10_03_2020_11_28_42_172NfmB6.jpg']
       ]
     }
   ],
