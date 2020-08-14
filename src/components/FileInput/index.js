@@ -17,24 +17,26 @@ const FileInput = ({ children, uploadUrl, onUpload }) => {
     event.preventDefault()
     setLoading(true)
 
-    const data = new FormData()
-    data.append('attachments', event.currentTarget.files[0])
-    axios.post(uploadUrl, data)
-       .then(({ status, result }) => {
-         console.log('then', status, result)
+    const file = new FormData()
+    file.append('attachments', event.currentTarget.files[0])
+    axios.post(uploadUrl, file)
+       .then(({ data, ...other }) => {
+         const { status, result } = data
+         console.log('then', data, status, result)
+
          setLoading(false)
          if (status === 'done') {
-           onUpload(result)
+           onUpload(JSON.parse(result))
          } else {
+           console.log(data, status, result)
+           console.log(other)
            alert('Ошибка при загрузке изображения. Попробуйте другое изображение.')
-           alert(result)
          }
        })
        .catch(err => {
          console.log(err)
          setLoading(false)
          alert('Ошибка при загрузке изображения. Попробуйте другое изображение.')
-         alert(err)
        })
   }
 
