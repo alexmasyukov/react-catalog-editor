@@ -3,7 +3,6 @@
 $hoverColor: #2a78f6
 
 .catalog
-  display: table
   margin-top: 15px
   font-size: 14px
 
@@ -24,17 +23,24 @@ $hoverColor: #2a78f6
   .title
     +transition()
     display: flex
+    align-items: center
     font-size: 18px
     font-weight: bold
     cursor: pointer
     &:hover
-      text-decoration: underline
       color: $hoverColor
+    span
+      font-weight: normal
+      font-size: 15px
+      margin-left: 15px
     svg
       color: inherit
       margin-left: 15px
       width: 20px
       height: 20px
+    .editLink
+      text-decoration: underline
+      font-weight: normal
 
 .mb
   margin: 20px 0
@@ -104,27 +110,48 @@ $hoverColor: #2a78f6
       cursor: pointer
 
 .empty
+  visibility: hidden
   opacity: 0 !important
 
 .categoryEditor
   font-size: 14px
-  display: flex
-  align-items: flex-end
+  //display: flex
+  //flex-wrap: wrap
+  //align-items: flex-end
   color: #333
   margin-bottom: 15px
   p
     margin: 0
     font-weight: bold
-  &>div
-    margin-left: 15px
-    &:first-of-type
-      margin-left: 0
+  //&>div
+  //  margin-left: 15px
+  //  &:first-of-type
+  //    margin-left: 0
   input, select
     margin-top: 5px
     padding: 10px
     font-size: 14px
     border: 1px solid #aaa
     border-radius: 3px
+  .row
+    display: flex
+    align-items: flex-end
+    width: 100%
+    margin-bottom: 10px
+    .col
+      margin-left: 15px
+      &:first-of-type
+        margin-left: 0
+  .desc
+    border: 1px solid #aaa
+    padding: 5px 10px !important
+    width: 421px
+    margin-top: 5px
+    +borderRadius(4px)
+  .edit
+    min-width: 250px !important
+  .btn
+    text-decoration: underline
 
 .btnNewCategory
   padding: 5px 0 20px 0
@@ -194,3 +221,17 @@ $hoverColor: #2a78f6
 .iconSpin
   +iconSpin
 
+.loading
+  display: flex
+  justify-content: center
+  margin-top: 30px
+  font-size: 25px
+
+.w100
+  width: 100%
+
+textarea
+  font: 400 13.3333px Arial
+
+.editLink
+  margin-left: 25px

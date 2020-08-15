@@ -39,8 +39,8 @@ export const getCategoryPath = (id, categories = [], init = []) => {
   const category = getCategoryById(id, categories)
 
   return 'pid' in category && category.pid !== 0 && category.pid !== '0' ?
-     getCategoryPath(category.pid, categories, [category.title, ...init]) :
-     [category.title, ...init].join('/')
+     getCategoryPath(category.pid, categories, [category.name, ...init]) :
+     [category.name, ...init].join('/')
 }
 
 export const setCategoriesPaths = (categories) => {

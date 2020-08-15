@@ -6,7 +6,7 @@ const ColumnHeaders = () => {
 
   return (
      <tr>
-       {columns.values.map(({ id, title, hidden }) => {
+       {columns.map(({ id, title, hidden }) => {
          if (hidden) return null
          return (
             <th key={id}>{title}</th>

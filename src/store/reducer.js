@@ -10,36 +10,43 @@ import {
 import { itemMove } from "helpers"
 
 const reducer = (state, action) => {
-  const idKey = state.columns.idKey
-
   switch (action.type) {
     case ACTION_TYPES.ADD_ROW:
       return {
         ...state,
-        rows: withNewRow(action.cid, state)
+        rows: withNewRow(action.id, action.cid, state)
+      }
+
+    case ACTION_TYPES.MOVE_UP_ROW:
+      return {
+        ...state,
+        rows: itemMove(state.rows, action.idx, action.idx - 1)
+      }
+
+    case ACTION_TYPES.MOVE_DOWN_ROW:
+      return {
+        ...state,
+        rows: itemMove(state.rows, action.idx, action.idx + 1)
       }
 
     case ACTION_TYPES.ADD_CHILD_CATEGORY:
       return {
         ...state,
-        categories: withNewChildCategory(action.id, state)
+        categories: withNewChildCategory(action.id, action.pid, state)
       }
 
     case ACTION_TYPES.DELETE_ROW:
       return {
         ...state,
-        rows: state.rows.filter(row => row[idKey] !== action.id)
+        rows: state.rows.filter(({ id }) => id !== action.id)
       }
 
     case ACTION_TYPES.CHANGE_CELL:
       return {
         ...state,
         rows: state.rows.map(row =>
-           row[idKey] === action.rowId ?
-              {
-                ...row,
-                [action.colKey]: action.value
-              } : row
+           row.id === action.rowId ?
+              { ...row, [action.colKey]: action.value } : row
         )
       }
 
@@ -74,7 +81,7 @@ const reducer = (state, action) => {
     case ACTION_TYPES.ADD_CATEGORY:
       return {
         ...state,
-        categories: withNewCategory(state)
+        categories: withNewCategory(action.id, state)
       }
 
     case ACTION_TYPES.MOVE_IMAGE:

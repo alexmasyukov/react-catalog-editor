@@ -6,7 +6,7 @@ import { HandlersContext } from "components/HandersContext"
 import styles from 'components/Editor/editor.module.sass'
 
 
-const Cell = ({ column, colKey, rowId, value }) => {
+const Cell = ({ column, rowId, value }) => {
   const [isEdit, setIsEdit] = useState(false)
   const handlers = useContext(HandlersContext)
   const { style } = column
@@ -39,7 +39,7 @@ const Cell = ({ column, colKey, rowId, value }) => {
 
   return (
      <td
-        key={colKey}
+        key={column.name}
         style={style}
         className={cn(
            (isEdit || column.type === COLUMN_TYPES.IMAGES) && styles.editCell,
@@ -49,7 +49,6 @@ const Cell = ({ column, colKey, rowId, value }) => {
      >
        <DynamicControl
           rowId={rowId}
-          colKey={colKey}
           isEdit={isEdit}
           value={value}
           column={column}

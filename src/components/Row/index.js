@@ -16,19 +16,15 @@ const Row = ({
 
   return (
      <tr>
-       {Object.keys(values).map((colKey) => {
-         const column = columns.byKey[colKey]
-         const value = values[colKey]
-
+       {columns.map(column => {
          if (column.hidden) return null
 
          return (
             <Cell
-               key={id + colKey}
+               key={id + column.name}
                column={column}
                rowId={id}
-               colKey={colKey}
-               value={value}
+               value={values[column.name]}
             />
          )
        })}

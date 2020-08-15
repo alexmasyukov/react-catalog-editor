@@ -10,7 +10,7 @@ import FileInput from "components/FileInput"
 import styles from 'components/Editor/editor.module.sass'
 
 
-const Images = ({ rowId, colKey, items = [], getImage, uploadImageUrl = '' }) => {
+const Images = ({ rowId, colKey, items = [], uploadImageUrl = '' }) => {
   const handlers = useContext(HandlersContext)
 
   return (
@@ -27,7 +27,7 @@ const Images = ({ rowId, colKey, items = [], getImage, uploadImageUrl = '' }) =>
                  <AiOutlineArrowLeft className={styles.btnImageLeft}/>
               )}
               <img
-                 src={getImage(smallImg)}
+                 src={handlers.getImage(smallImg)}
                  alt=""
               />
             </div>

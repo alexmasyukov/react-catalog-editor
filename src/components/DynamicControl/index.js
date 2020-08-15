@@ -4,7 +4,7 @@ import Edit from "components/Edit"
 import Images from "components/Images"
 
 
-const DynamicControl = ({ rowId, colKey, isEdit = false, value, column,
+const DynamicControl = ({ rowId, isEdit = false, value, column,
                           onChange }) => {
   switch (column.type) {
     case COLUMN_TYPES.CHECK:
@@ -12,14 +12,14 @@ const DynamicControl = ({ rowId, colKey, isEdit = false, value, column,
          <input
             type="checkbox"
             checked={value}
-            onChange={onChange(rowId, colKey, column.type)}/>
+            onChange={onChange(rowId, column.name, column.type)}/>
       )
 
     case COLUMN_TYPES.STRING:
       if (isEdit) {
         return <Edit
            initialValue={value}
-           onEnter={onChange(rowId, colKey, column.type)}
+           onEnter={onChange(rowId, column.name, column.type)}
         />
       }
       return value
@@ -28,7 +28,7 @@ const DynamicControl = ({ rowId, colKey, isEdit = false, value, column,
       if (isEdit) {
         return <Edit
            initialValue={value}
-           onEnter={onChange(rowId, colKey, column.type)}
+           onEnter={onChange(rowId, column.name, column.type)}
            number={true}
         />
       }
@@ -38,7 +38,7 @@ const DynamicControl = ({ rowId, colKey, isEdit = false, value, column,
       if (isEdit) {
         return <Edit
            initialValue={value}
-           onEnter={onChange(rowId, colKey, column.type)}
+           onEnter={onChange(rowId, column.name, column.type)}
            inputType={INPUT_TYPES.TEXTAREA}
         />
       }
@@ -47,10 +47,9 @@ const DynamicControl = ({ rowId, colKey, isEdit = false, value, column,
     case COLUMN_TYPES.IMAGES:
       return <Images
          rowId={rowId}
-         colKey={colKey}
+         colKey={column.name}
          items={value}
          uploadImageUrl={column.uploadImageUrl}
-         getImage={column.getImage}
       />
 
     default:

@@ -1,4 +1,4 @@
-import React, { useReducer } from 'react'
+import React, { useEffect, useReducer } from 'react'
 import Category from "components/Category"
 import Btn from "components/Btn"
 import { ColumnsProvider } from "components/ColumnsContext"
@@ -56,12 +56,15 @@ const getKeyByColumnType = (columnType, columns) =>
    columns.keys.filter(key => columns.byKey[key].type === columnType)
 
 
+const initialConfig = {
+  idCounter: () => 0,
+  cidCounter: () => 0,
+  getImage: (img) => img,
+  uploadImageUrl: ''
+}
+
+
 const initialState = {
-  // helpers: {
-  //   categoryIdMaker: () => 0,
-  //   rowIdMaker: () => 0,
-  //   getImage: (img) => img
-  // },
   columns: [],
   categories: [],
   rows: []
@@ -69,51 +72,55 @@ const initialState = {
 
 
 const prepareData = (data) => {
-  const columns = normalize(getColumnKeyName)(data.columns)
-  columns.idKey = getKeyByColumnType(COLUMN_TYPES.ID, columns)
-  columns.cidKey = getKeyByColumnType(COLUMN_TYPES.CATEGORY_ID, columns)
+  // const columns = normalize(getColumnKeyName)(data.columns)
+  // columns.idKey = getKeyByColumnType(COLUMN_TYPES.ID, columns)
+  // columns.cidKey = getKeyByColumnType(COLUMN_TYPES.CATEGORY_ID, columns)
+// rows: setDefaultValues(
+  //    normalizeRowValuesByKeys(data.rows, columns.keys), columns
+  // )
 
   return {
     ...data,
-    columns,
-    categories: setCategoriesPaths(data.categories),
-    rows: setDefaultValues(
-       normalizeRowValuesByKeys(data.rows, columns.keys), columns
-    )
+    categories: setCategoriesPaths(data.categories)
   }
 }
 
 
-const Editor = ({ data = initialState, onChange }) => {
-  const [state, dispatch] = useReducer(reducer, prepareData(data))
+const Editor = ({ data, config = initialConfig, onChange }) => {
+  const [state, dispatch] = useReducer(reducer, prepareData({ ...initialState, ...data }))
   const { columns, rows, categories } = state
   onChange(state)
 
-  console.warn('Editor render')
+  console.warn('Editor render', state)
+
 
   const handleAddRow = (cid) => () =>
      dispatch({
        type: ACTION_TYPES.ADD_ROW,
-       cid
+       cid,
+       id: config.idCounter()
      })
 
 
-  const handleRowMoveDown = (cid, id) => () => {
-    console.log('handleRowMoveDown', id)
+  const handleRowMoveDown = (id) => () => {
+    const idx = state.rows.findIndex(row => row.id === id)
+    if (idx === 0) return false
 
-    const idx = rows.findIndex(row => row[columns.idKey] === id)
-    if (idx === rows.length - 1) return false
-    // setRows(itemMove(rows, idx, idx + 1))
+    dispatch({
+      type: ACTION_TYPES.MOVE_DOWN_ROW,
+      idx
+    })
   }
 
 
   const handleRowMoveUp = (id) => () => {
-    console.log('handleRowMoveUp', id)
-
-    const idx = rows.findIndex(row => row[columns.idKey] === id)
-    console.log('idx', idx, rows)
+    const idx = state.rows.findIndex(row => row.id === id)
     if (idx === 0) return false
-    // setRows(itemMove(rows, idx, idx - 1))
+
+    dispatch({
+      type: ACTION_TYPES.MOVE_UP_ROW,
+      idx
+    })
   }
 
 
@@ -140,10 +147,11 @@ const Editor = ({ data = initialState, onChange }) => {
   }
 
 
-  const handleAddChildCategory = (id) => () =>
+  const handleAddChildCategory = (pid) => () =>
      dispatch({
        type: ACTION_TYPES.ADD_CHILD_CATEGORY,
-       id
+       id: config.cidCounter(),
+       pid
      })
 
 
@@ -189,7 +197,8 @@ const Editor = ({ data = initialState, onChange }) => {
 
   const handleAddCategory = () =>
      dispatch({
-       type: ACTION_TYPES.ADD_CATEGORY
+       type: ACTION_TYPES.ADD_CATEGORY,
+       id: config.cidCounter()
      })
 
 
@@ -215,7 +224,7 @@ const Editor = ({ data = initialState, onChange }) => {
 
 
   const getRowsByCategoryId = (cid) =>
-     rows.filter(row => row[columns.cidKey] === cid)
+     rows.filter(row => row.cid === cid)
 
 
   return (
@@ -234,7 +243,8 @@ const Editor = ({ data = initialState, onChange }) => {
              onAddChildCategory: handleAddChildCategory,
              onChangeCategory: handleChangeCategory,
              onImageMoveLeft: handleImageMoveLeft,
-             onAddImage: onAddImage
+             onAddImage: onAddImage,
+             getImage: config.getImage
            }}>
              {categories.map((category, idx) => (
                 <Category
