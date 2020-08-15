@@ -85,7 +85,6 @@ const reducer = (state, action) => {
       }
 
     case ACTION_TYPES.MOVE_IMAGE:
-      itemMove(state.categories, action.idx, action.idx + 1)
       return {
         ...state,
         rows: withMovedImageInRow(

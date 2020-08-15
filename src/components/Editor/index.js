@@ -244,7 +244,7 @@ const Editor = ({ data, config = initialConfig, onChange }) => {
              onChangeCategory: handleChangeCategory,
              onImageMoveLeft: handleImageMoveLeft,
              onAddImage: onAddImage,
-             getImage: config.getImage
+             config
            }}>
              {categories.map((category, idx) => (
                 <Category

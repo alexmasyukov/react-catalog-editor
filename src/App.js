@@ -149,8 +149,8 @@ const columns = [
     type: COLUMN_TYPES.IMAGES,
     name: 'images',
     default: [
-      // ['small_27_03_2020_09_08_53_779J6zxr.jpg', '27_03_2020_09_08_53_779J6zxr.jpg'],
-      // ['small_10_03_2020_11_28_42_172NfmB6.jpg', '10_03_2020_11_28_42_172NfmB6.jpg']
+      ['small_27_03_2020_09_08_53_779J6zxr.jpg', '27_03_2020_09_08_53_779J6zxr.jpg'],
+      ['small_10_03_2020_11_28_42_172NfmB6.jpg', '10_03_2020_11_28_42_172NfmB6.jpg']
     ],
     order: 12
   }
@@ -175,8 +175,6 @@ const initialState = {
 
 
 const reducer = (state, action) => {
-  // console.log('reducer', action.type, action, state)
-
   switch (action.type) {
     case ACTION_TYPES.FETCH_DATA_REQUEST:
       return {

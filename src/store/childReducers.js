@@ -51,7 +51,7 @@ export const withNewChildCategory = (id, pid, { helpers, categories }) => {
   return setCategoriesPaths(updated)
 }
 
-export const withNewCategory = (id, { categories, helpers }) =>
+export const withNewCategory = (id, { categories }) =>
    setCategoriesPaths([
      ...categories,
      getNewCategory(id)
@@ -69,36 +69,22 @@ export const withUpdatedCategory = (updatedCategory, { categories }) => {
   return setCategoriesPaths(updated)
 }
 
-export const withMovedImageInRow = (rowId, colKey, imageIdx, { rows, columns }) => {
-  const idKey = columns.idKey
-
-  return rows.map(row => {
-    if (row[idKey] === rowId) {
-      const images = row[colKey]
-      return {
-        ...row,
-        [colKey]: itemMove(images, imageIdx, imageIdx - 1)
-      }
-    }
-
-    return row
-  })
+export const withMovedImageInRow = (rowId, colKey, imageIdx, { rows }) => {
+  return rows.map(row => row.id === rowId ?
+     {
+       ...row,
+       [colKey]: itemMove(row.images, imageIdx, imageIdx - 1)
+     } : row
+  )
 }
 
-export const withAddImageInRow = (rowId, colKey, image, { rows, columns }) => {
-  const idKey = columns.idKey
-
-  return rows.map(row => {
-    if (row[idKey] === rowId) {
-      const images = row[colKey]
-      return {
-        ...row,
-        [colKey]: [...images, image]
-      }
-    }
-
-    return row
-  })
+export const withAddImageInRow = (rowId, colKey, image, { rows }) => {
+  return rows.map(row => row.id === rowId ?
+     {
+       ...row,
+       images: [...row.images, image]
+     } : row
+  )
 }
 
 export const withoutCategory = (id, { categories, rows, columns }) => {

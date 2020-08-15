@@ -4,8 +4,13 @@ import Edit from "components/Edit"
 import Images from "components/Images"
 
 
-const DynamicControl = ({ rowId, isEdit = false, value, column,
-                          onChange }) => {
+const DynamicControl = ({
+                          rowId,
+                          isEdit = false,
+                          value,
+                          column,
+                          onChange
+                        }) => {
   switch (column.type) {
     case COLUMN_TYPES.CHECK:
       return (
@@ -49,7 +54,6 @@ const DynamicControl = ({ rowId, isEdit = false, value, column,
          rowId={rowId}
          colKey={column.name}
          items={value}
-         uploadImageUrl={column.uploadImageUrl}
       />
 
     default:
